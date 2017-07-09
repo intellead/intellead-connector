@@ -29,6 +29,12 @@ app.use(function(req, res, next) {
 
 app.use('/', router);
 
+var questions = [
+    "Tem interesse em contratar ferramenta de gestão?",
+    "Estou a procura de um software de gestão para minha empresa!",
+    "Gostaria de receber um contato do consultor para avaliação da ferramenta?"
+];
+
 function is_a_qualified_lead(lead) {
     if (lead.lead_stage == "Lead" && (lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
         console.log("LEAD_STAGE: " + lead.lead_stage);
@@ -48,12 +54,6 @@ function question_with_answer_yes(lead) {
     }
 }
 
-var questions = [
-                    "Tem interesse em contratar ferramenta de gestão?",
-                    "Estou a procura de um software de gestão para minha empresa!",
-                    "Gostaria de receber um contato do consultor para avaliação da ferramenta?"
-                ];
-
 // Route that receives a POST request to rd-webhook/
 app.post('/rd-webhook', function (req, res) {
     console.log("[rd-webhook]ENTROU");
@@ -63,6 +63,7 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
+        console.log(lead);
         if (is_a_qualified_lead(lead)) {
             //SEND TO EXACTSALES
             console.log("EH QUALIFICADO");
