@@ -8,6 +8,8 @@ var _ = require('lodash');
 class Dao {
 
     saveConversion(lead, callback) {
+        console.log("[saveConversion]ENTROU");
+        console.log("[saveConversion]LEAD: " + lead);
         MongoClient.connect(url, function (err, db) {
             if (err) {
                 console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -19,6 +21,7 @@ class Dao {
                         if (err) {
                             console.log(err);
                         }
+                        console.log("[saveConversion]SALVOU");
                         db.close();
                         callback(err, result);
                     }
@@ -28,6 +31,7 @@ class Dao {
     }
 
     numberOfConversionByEmail(callback){
+        console.log("[numberOfConversionByEmail]ENTROU");
         MongoClient.connect(url, function (err, db) {
             if (err) {
                 console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -48,6 +52,7 @@ class Dao {
                             console.log(err);
                         }
                         db.close();
+                        console.log("[numberOfConversionByEmail]RESULT: " + result);
                         callback(err, result);
                     }
                 );

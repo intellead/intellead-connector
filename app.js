@@ -30,7 +30,9 @@ app.use(function(req, res, next) {
 app.use('/', router);
 
 function is_a_qualified_lead(lead) {
-    if ((lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
+    if (lead.lead_stage == "Lead" && (lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
+        console.log("LEAD_STAGE: " + lead.lead_stage);
+        console.log("FIT_SCORE: " + lead.fit_score);
         return true;
     }
     return false;
@@ -39,7 +41,8 @@ function is_a_qualified_lead(lead) {
 function question_with_answer_yes(lead) {
     var arrayLength = questions.length;
     for (var i = 0; i < arrayLength; i++) {
-        if (lead[questions[i]] == "Sim") {
+        if (lead.last_conversion[questions[i]] == "Sim") {
+            console.log("QUESTÃO COM SIM: " + questions[i]);
             return questions[i];
         }
     }
@@ -53,6 +56,7 @@ var questions = [
 
 // Route that receives a POST request to rd-webhook/
 app.post('/rd-webhook', function (req, res) {
+    console.log("[rd-webhook]ENTROU");
     var body = req.body;
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
@@ -61,8 +65,10 @@ app.post('/rd-webhook', function (req, res) {
         var lead = leads[index];
         if (is_a_qualified_lead(lead)) {
             //SEND TO EXACTSALES
+            console.log("EH QUALIFICADO");
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
+            console.log("LEADDTO: " + leadDTO);
             new dao.saveConversion(leadDTO, function (err, result) {
                 if (err) {
                     return res.sendStatus(400);
@@ -78,6 +84,7 @@ router.get('/rd-webhook', function(req, res, next) {
 });
 
 app.post('/number_of_conversion_by_email', function (req, res) {
+    console.log("[number_of_conversion_by_email]ENTROU");
     var dao = new Dao();
     new dao.numberOfConversionByEmail(function (err, result) {
         if (err) {
