@@ -32,10 +32,20 @@ app.use('/', router);
 var questions = [
     "Tem interesse em contratar ferramenta de gestão?",
     "Estou a procura de um software de gestão para minha empresa!",
-    "Gostaria de receber um contato do consultor para avaliação da ferramenta?"
+    "Gostaria de receber um contato do consultor para avaliação da ferramenta?",
+    "Sim, eu gostaria de receber um contato do consultor para avaliação do software",
+    "Quero uma demonstração de um software de gestão para minha empresa!",
+    "Quero uma demonstração de um software de gestão para minha empresa! - Palestras",
+    "Quero uma demonstração de um software de gestão para minha empresa! - Planilhas e Ebooks"
 ];
 
 function is_a_qualified_lead(lead) {
+    console.log("[is_a_qualified_lead]ENTROU");
+    console.log(lead.lead_stage == "Lead");
+    console.log(lead.fit_score == "a");
+    console.log(lead.fit_score == "b");
+    console.log(question_with_answer_yes(lead));
+
     if (lead.lead_stage == "Lead" && (lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
         console.log("LEAD_STAGE: " + lead.lead_stage);
         console.log("FIT_SCORE: " + lead.fit_score);
