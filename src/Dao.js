@@ -2,7 +2,6 @@
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 var url = process.env.MONGODB_URI;
-var _ = require('lodash');
 
 
 class Dao {
