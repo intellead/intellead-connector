@@ -75,6 +75,8 @@ app.post('/rd-webhook', function (req, res) {
                 }
                 res.sendStatus(200);
             });
+        } else {
+            return res.sendStatus(200);
         }
     }
 });
