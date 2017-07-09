@@ -85,7 +85,7 @@ router.get('/rd-webhook', function(req, res, next) {
     res.sendStatus(200);
 });
 
-app.post('/number_of_conversion_by_email', function (req, res) {
+app.get('/number_of_conversion_by_email', function (req, res) {
     console.log("[number_of_conversion_by_email]ENTROU");
     var dao = new Dao();
     dao.numberOfConversionByEmail(function (err, result) {
