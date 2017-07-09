@@ -7,8 +7,6 @@ var url = process.env.MONGODB_URI;
 class Dao {
 
     saveConversion(lead, callback) {
-        console.log("[saveConversion]ENTROU");
-        console.log("[saveConversion]LEAD: " + lead);
         MongoClient.connect(url, function (err, db) {
             if (err) {
                 console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -20,7 +18,6 @@ class Dao {
                         if (err) {
                             console.log(err);
                         }
-                        console.log("[saveConversion]SALVOU");
                         db.close();
                         callback(err, result);
                     }

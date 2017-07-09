@@ -69,7 +69,6 @@ app.post('/rd-webhook', function (req, res) {
             //SEND TO EXACTSALES
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
-            console.log("LEADDTO: " + leadDTO);
             dao.saveConversion(leadDTO, function (err, result) {
                 if (err) {
                     return res.sendStatus(400);
@@ -89,7 +88,7 @@ router.get('/rd-webhook', function(req, res, next) {
 app.post('/number_of_conversion_by_email', function (req, res) {
     console.log("[number_of_conversion_by_email]ENTROU");
     var dao = new Dao();
-    new dao.numberOfConversionByEmail(function (err, result) {
+    dao.numberOfConversionByEmail(function (err, result) {
         if (err) {
             return res.sendStatus(400);
         }
