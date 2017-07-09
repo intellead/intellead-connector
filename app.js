@@ -47,6 +47,8 @@ function is_a_qualified_lead(lead) {
 function question_with_answer_yes(lead) {
     var arrayLength = questions.length;
     for (var i = 0; i < arrayLength; i++) {
+        console.log(questions[i]);
+        console.log(lead.last_conversion[questions[i]]);
         if (lead.last_conversion[questions[i]] == "Sim") {
             console.log("QUESTÃO COM SIM: " + questions[i]);
             return questions[i];
@@ -63,7 +65,9 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
-        console.log(lead);
+        console.log(lead.lead_stage);
+        console.log(lead.fit_score);
+        console.log(lead.last_conversion);
         if (is_a_qualified_lead(lead)) {
             //SEND TO EXACTSALES
             console.log("EH QUALIFICADO");
