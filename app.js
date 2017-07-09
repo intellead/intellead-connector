@@ -4,11 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
-var index = require('./routes/index');
-var users = require('./routes/users');
-
+var router = express.Router();
 var app = express();
+var Dao = require('./src/Dao');
+var LeadConversionData = require('./src/LeadConversionData');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,8 +21,75 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
+    next();
+});
+
+app.use('/', router);
+
+function is_a_qualified_lead(lead) {
+    if ((lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
+        return true;
+    }
+    return false;
+}
+
+function question_with_answer_yes(lead) {
+    var arrayLength = questions.length;
+    for (var i = 0; i < arrayLength; i++) {
+        if (lead[questions[i]] == "Sim") {
+            return questions[i];
+        }
+    }
+}
+
+var questions = [
+                    "Tem interesse em contratar ferramenta de gestão?",
+                    "Estou a procura de um software de gestão para minha empresa!",
+                    "Gostaria de receber um contato do consultor para avaliação da ferramenta?"
+                ];
+
+// Route that receives a POST request to rd-webhook/
+app.post('/rd-webhook', function (req, res) {
+    var body = req.body;
+    if (!body) return res.sendStatus(400);
+    var leads = body["leads"];
+    var dao = new Dao();
+    for (var index in leads) {
+        var lead = leads[index];
+        if (is_a_qualified_lead(lead)) {
+            //SEND TO EXACTSALES
+            var question = question_with_answer_yes(lead);
+            var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
+            new dao.saveConversion(leadDTO, function (err, result) {
+                if (err) {
+                    return res.sendStatus(400);
+                }
+                res.sendStatus(200);
+            });
+        }
+    }
+});
+
+router.get('/rd-webhook', function(req, res, next) {
+    res.sendStatus(200);
+});
+
+app.post('/number_of_conversion_by_email', function (req, res) {
+    var dao = new Dao();
+    new dao.numberOfConversionByEmail(function (err, result) {
+        if (err) {
+            return res.sendStatus(400);
+        }
+        return res.status(200).send(result);
+    });
+});
+
+router.get('/number_of_conversion_by_email', function(req, res, next) {
+    res.sendStatus(200);
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
