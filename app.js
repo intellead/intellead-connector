@@ -40,15 +40,7 @@ var questions = [
 ];
 
 function is_a_qualified_lead(lead) {
-    console.log("[is_a_qualified_lead]ENTROU");
-    console.log(lead.lead_stage == "Lead");
-    console.log(lead.fit_score == "a");
-    console.log(lead.fit_score == "b");
-    console.log(question_with_answer_yes(lead));
-
     if (lead.lead_stage == "Lead" && (lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
-        console.log("LEAD_STAGE: " + lead.lead_stage);
-        console.log("FIT_SCORE: " + lead.fit_score);
         return true;
     }
     return false;
@@ -57,11 +49,8 @@ function is_a_qualified_lead(lead) {
 function question_with_answer_yes(lead) {
     var arrayLength = questions.length;
     for (var i = 0; i < arrayLength; i++) {
-        console.log(questions[i]);
-        let question = questions[i];
         console.log(lead.last_conversion.content[questions[i]]);
         if (lead.last_conversion.content[questions[i]] == "Sim") {
-            console.log("QUESTÃO COM SIM: " + questions[i]);
             return questions[i];
         }
     }
@@ -76,16 +65,12 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
-        console.log(lead.lead_stage);
-        console.log(lead.fit_score);
-        console.log(lead.last_conversion.content);
         if (is_a_qualified_lead(lead)) {
             //SEND TO EXACTSALES
-            console.log("EH QUALIFICADO");
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
             console.log("LEADDTO: " + leadDTO);
-            new dao.saveConversion(leadDTO, function (err, result) {
+            dao.saveConversion(leadDTO, function (err, result) {
                 if (err) {
                     return res.sendStatus(400);
                 }
