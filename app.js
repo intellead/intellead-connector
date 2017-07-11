@@ -63,6 +63,16 @@ app.post('/rd-webhook', function (req, res) {
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
     var dao = new Dao();
+
+    dao.numberOfConversionByEmail(function (err, result) {
+        if (err) {
+            return res.sendStatus(400);
+        } else{
+            return res.status(200).send(result);
+        }
+    });
+
+
     for (var index in leads) {
         var lead = leads[index];
         if (is_a_qualified_lead(lead)) {
@@ -93,19 +103,9 @@ app.post('/number_of_conversion_by_email', function (req, res) {
     dao.numberOfConversionByEmail(function (err, result) {
         if (err) {
             return res.sendStatus(400);
+        } else{
+            return res.status(200).send(result);
         }
-        return res.status(200).send(result);
-    });
-});
-
-app.get('/number_of_conversion_by_email', function (req, res) {
-    console.log("[number_of_conversion_by_email]ENTROU");
-    var dao = new Dao();
-    dao.numberOfConversionByEmail(function (err, result) {
-        if (err) {
-            return res.sendStatus(400);
-        }
-        return res.status(200).send(result);
     });
 });
 
