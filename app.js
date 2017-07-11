@@ -63,16 +63,6 @@ app.post('/rd-webhook', function (req, res) {
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
     var dao = new Dao();
-
-    dao.numberOfConversionByEmail(function (err, result) {
-        if (err) {
-            return res.sendStatus(400);
-        } else{
-            return res.status(200).send(result);
-        }
-    });
-
-
     for (var index in leads) {
         var lead = leads[index];
         if (is_a_qualified_lead(lead)) {
