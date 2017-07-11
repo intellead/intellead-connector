@@ -66,6 +66,8 @@ app.post('/rd-webhook', function (req, res) {
     for (var index in leads) {
         var lead = leads[index];
         if (is_a_qualified_lead(lead)) {
+            //Alterar estágio do Lead no funil do RD Station (API)
+            //http://ajuda.rdstation.com.br/hc/pt-br/articles/200310699--Alterar-est%C3%A1gio-do-Lead-no-funil-do-RD-Station-API-
             //SEND TO EXACTSALES
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
@@ -83,6 +85,17 @@ app.post('/rd-webhook', function (req, res) {
 
 router.get('/rd-webhook', function(req, res, next) {
     res.sendStatus(200);
+});
+
+app.post('/number_of_conversion_by_email', function (req, res) {
+    console.log("[number_of_conversion_by_email]ENTROU");
+    var dao = new Dao();
+    dao.numberOfConversionByEmail(function (err, result) {
+        if (err) {
+            return res.sendStatus(400);
+        }
+        return res.status(200).send(result);
+    });
 });
 
 app.get('/number_of_conversion_by_email', function (req, res) {
