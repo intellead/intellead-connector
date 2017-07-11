@@ -48,7 +48,7 @@ class Dao {
                             console.log(err);
                         }
                         db.close();
-                        console.log("[numberOfConversionByEmail]RESULT: " + result);
+                        console.log("[numberOfConversionByEmail]RESULT: " + JSON.stringify(result));
                         callback(err, result);
                     }
                 );
