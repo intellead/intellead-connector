@@ -78,7 +78,10 @@ app.post('/rd-webhook', function (req, res) {
                 if (err) {
                     console.log(err);
                     return res.sendStatus(400);
+                } else { //Comment when the service is fully activated
+                    return res.sendStatus(200);
                 }
+                /*
                 var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
                 json_rd = {
                     "auth_token": private_token_rd,
@@ -91,7 +94,7 @@ app.post('/rd-webhook', function (req, res) {
                         console.log(error);
                         return res.sendStatus(400);
                     } else {
-                json_exact = {
+                        json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
                                 "Email": lead.email,
@@ -126,6 +129,7 @@ app.post('/rd-webhook', function (req, res) {
                         });
                     }
                 });
+                */
             });
         } else {
             return res.sendStatus(200);
