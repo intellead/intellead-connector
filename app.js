@@ -8,6 +8,11 @@ var router = express.Router();
 var app = express();
 var Dao = require('./src/Dao');
 var LeadConversionData = require('./src/LeadConversionData');
+var request = require('request');
+var private_token = process.env.PRIVATE_TOKEN;
+var stage_lead = 0;
+var stage_qualified_lead = 1;
+var stage_client = 2;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -66,16 +71,29 @@ app.post('/rd-webhook', function (req, res) {
     for (var index in leads) {
         var lead = leads[index];
         if (is_a_qualified_lead(lead)) {
-            //Alterar estágio do Lead no funil do RD Station (API)
-            //http://ajuda.rdstation.com.br/hc/pt-br/articles/200310699--Alterar-est%C3%A1gio-do-Lead-no-funil-do-RD-Station-API-
-            //SEND TO EXACTSALES
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
             dao.saveConversion(leadDTO, function (err, result) {
                 if (err) {
+                    console.log(err);
                     return res.sendStatus(400);
                 }
-                res.sendStatus(200);
+                var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
+                json_rd = {
+                    "auth_token": private_token,
+                    "lead": {
+                        "lifecycle_stage": stage_qualified_lead
+                    }
+                };
+                request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
+                    if (error) {
+                        console.log(error);
+                        return res.sendStatus(400);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
+                //http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/56e1b8fa-f89f-4faf-a9ee-d110a1c102bb/origem=testeferramenta
             });
         } else {
             return res.sendStatus(200);
@@ -87,19 +105,6 @@ router.get('/rd-webhook', function(req, res, next) {
     res.sendStatus(200);
 });
 
-/*
-app.post('/number_of_conversion_by_email', function (req, res) {
-    console.log('[number_of_conversion_by_email]');
-    var dao = new Dao();
-    dao.numberOfConversionByEmail(function (err, result) {
-        if (err) {
-            return res.sendStatus(400);
-        } else{
-            return res.status(200).send(result);
-        }
-    });
-});
-*/
 router.get('/number_of_conversion_by_email', function(req, res, next) {
     console.log('[ROUTER]');
     var dao = new Dao();
@@ -110,7 +115,6 @@ router.get('/number_of_conversion_by_email', function(req, res, next) {
             return res.status(200).send(result);
         }
     });
-    //res.sendStatus(200);
 });
 
 // catch 404 and forward to error handler
