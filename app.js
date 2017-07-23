@@ -104,7 +104,7 @@ app.post('/rd-webhook', function (req, res) {
                             },
                             "TelEmpresa": lead.personal_phone,
                             "CamposPersonalizados": [{
-                                "Link RD": lead.public_url,
+                                "Link_RD": lead.public_url,
                             }]
                         };
                         //var url_exact = 'http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/'+private_token_exact+'/origem=testeferramenta';
