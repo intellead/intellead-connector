@@ -103,9 +103,7 @@ app.post('/rd-webhook', function (req, res) {
                                 "value": "testeferramenta"
                             },
                             "TelEmpresa": lead.personal_phone,
-                            "CamposPersonalizados": [{
-                                "Link RD": lead.public_url
-                            }]
+                            "Link RD": lead.public_url
                         };
                         //var url_exact = 'http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/'+private_token_exact+'/origem=testeferramenta';
                         var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
