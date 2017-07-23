@@ -91,7 +91,6 @@ app.post('/rd-webhook', function (req, res) {
                 //        console.log(error);
                 //        return res.sendStatus(400);
                 //    } else {
-                print('URL RD'+lead.public_url);
                         json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
