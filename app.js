@@ -71,7 +71,7 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
-        //if (is_a_qualified_lead(lead)) {
+        if (is_a_qualified_lead(lead)) {
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
             dao.saveConversion(leadDTO, function (err, result) {
@@ -86,12 +86,11 @@ app.post('/rd-webhook', function (req, res) {
                         "lifecycle_stage": stage_qualified_lead
                     }
                 };
-                //request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
-                //    if (error) {
-                //        console.log(error);
-                //        return res.sendStatus(400);
-                //    } else {
-                console.log('URL RD'+lead.public_url);
+                request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
+                    if (error) {
+                        console.log(error);
+                        return res.sendStatus(400);
+                    } else {
                 json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
@@ -103,11 +102,8 @@ app.post('/rd-webhook', function (req, res) {
                             "Origem": {
                                 "value": "testeferramenta"
                             },
-                            "TelEmpresa": lead.personal_phone,
-                            "Link RD": lead.public_url
+                            "TelEmpresa": lead.personal_phone
                         };
-
-                        //var url_exact = 'http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/'+private_token_exact+'/origem=testeferramenta';
                         var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
                         request({
                             method: 'POST',
@@ -128,12 +124,12 @@ app.post('/rd-webhook', function (req, res) {
                                 res.sendStatus(200);
                             }
                         });
-                    //}
-               // });
+                    }
+                });
             });
-        //} else {
-        //    return res.sendStatus(200);
-        //}
+        } else {
+            return res.sendStatus(200);
+        }
     }
 });
 
