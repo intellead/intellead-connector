@@ -86,11 +86,11 @@ app.post('/rd-webhook', function (req, res) {
                         "lifecycle_stage": stage_qualified_lead
                     }
                 };
-                request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
-                    if (error) {
-                        console.log(error);
-                        return res.sendStatus(400);
-                    } else {
+                //request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
+                //    if (error) {
+                //        console.log(error);
+                //        return res.sendStatus(400);
+                //    } else {
                         json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
@@ -127,8 +127,8 @@ app.post('/rd-webhook', function (req, res) {
                                 res.sendStatus(200);
                             }
                         });
-                    }
-                });
+                    //}
+               // });
             });
         } else {
             return res.sendStatus(200);
