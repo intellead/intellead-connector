@@ -101,7 +101,15 @@ app.post('/number_of_conversion_by_email', function (req, res) {
 
 router.get('/number_of_conversion_by_email', function(req, res, next) {
     console.log('[ROUTER]');
-    res.sendStatus(200);
+    var dao = new Dao();
+    dao.numberOfConversionByEmail(function (err, result) {
+        if (err) {
+            return res.sendStatus(400);
+        } else{
+            return res.status(200).send(result);
+        }
+    });
+    //res.sendStatus(200);
 });
 
 // catch 404 and forward to error handler
