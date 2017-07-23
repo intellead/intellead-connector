@@ -71,7 +71,7 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
-        if (is_a_qualified_lead(lead)) {
+        //if (is_a_qualified_lead(lead)) {
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
             dao.saveConversion(leadDTO, function (err, result) {
@@ -131,9 +131,9 @@ app.post('/rd-webhook', function (req, res) {
                     //}
                // });
             });
-        } else {
-            return res.sendStatus(200);
-        }
+        //} else {
+        //    return res.sendStatus(200);
+        //}
     }
 });
 
