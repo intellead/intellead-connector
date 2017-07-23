@@ -9,7 +9,8 @@ var app = express();
 var Dao = require('./src/Dao');
 var LeadConversionData = require('./src/LeadConversionData');
 var request = require('request');
-var private_token = process.env.PRIVATE_TOKEN;
+var private_token_rd = process.env.PRIVATE_TOKEN_RD;
+var private_token_exact = process.env.PRIVATE_TOKEN_EXACT;
 var stage_lead = 0;
 var stage_qualified_lead = 1;
 var stage_client = 2;
@@ -80,7 +81,7 @@ app.post('/rd-webhook', function (req, res) {
                 }
                 var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
                 json_rd = {
-                    "auth_token": private_token,
+                    "auth_token": private_token_rd,
                     "lead": {
                         "lifecycle_stage": stage_qualified_lead
                     }
@@ -90,10 +91,44 @@ app.post('/rd-webhook', function (req, res) {
                         console.log(error);
                         return res.sendStatus(400);
                     } else {
-                        res.sendStatus(200);
+                        json_exact = {
+                            "Empresa": lead.company,
+                            "Contatos": [{
+                                "Email": lead.email,
+                                "Nome": lead.name,
+                                "Cargo": lead.job_title,
+                                "Tell": lead.personal_phone
+                            }],
+                            "Origem": {
+                                "value": "testeferramenta"
+                            },
+                            "TelEmpresa": lead.personal_phone,
+                            "CamposPersonalizados": [{
+                                "Link RD": lead.public_url,
+                            }]
+                        };
+                        var url_exact = 'http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/'+private_token_exact+'/origem=testeferramenta';
+                        request({
+                            method: 'POST',
+                            url: url_exact,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'token_exact': private_token_exact
+                            },
+                            body: JSON.stringify(json_exact)
+                        }, function (error, response, body) {
+                            if (error){
+                                console.log(error);
+                                return res.sendStatus(400);
+                            } else {
+                                console.log('Status:', response.statusCode);
+                                console.log('Headers:', JSON.stringify(response.headers));
+                                console.log('Response:', body);
+                                res.sendStatus(200);
+                            }
+                        });
                     }
                 });
-                //http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/56e1b8fa-f89f-4faf-a9ee-d110a1c102bb/origem=testeferramenta
             });
         } else {
             return res.sendStatus(200);
