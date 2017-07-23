@@ -97,7 +97,7 @@ app.post('/rd-webhook', function (req, res) {
                                 "Email": lead.email,
                                 "Nome": lead.name,
                                 "Cargo": lead.job_title,
-                                "Tell": lead.personal_phone
+                                "Tel1": lead.personal_phone
                             }],
                             "Origem": {
                                 "value": "testeferramenta"
