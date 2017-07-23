@@ -91,6 +91,7 @@ app.post('/rd-webhook', function (req, res) {
                 //        console.log(error);
                 //        return res.sendStatus(400);
                 //    } else {
+                print('URL RD'+lead.public_url);
                         json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
@@ -104,7 +105,7 @@ app.post('/rd-webhook', function (req, res) {
                             },
                             "TelEmpresa": lead.personal_phone,
                             "CamposPersonalizados": [{
-                                "Link_RD": lead.public_url,
+                                "Link_RD": lead.public_url
                             }]
                         };
                         //var url_exact = 'http://app.exactsales.com.br/api/v1/REST/PostLeadRDStation/'+private_token_exact+'/origem=testeferramenta';
