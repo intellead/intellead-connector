@@ -46,7 +46,7 @@ var questions = [
 ];
 
 function is_a_qualified_lead(lead) {
-    if (lead.lead_stage == "Lead" && has_fit_score(lead.fit_score) && raised_hand(lead)) {
+    if (lead.lead_stage == "Lead" && has_fit_score(lead.fit_score) && raised_hand(lead) && was_not_discarded(lead)) {
         return true;
     }
     return false;
@@ -58,7 +58,11 @@ function has_fit_score(fit_score) {
 
 
 function raised_hand(lead) {
-    return (question_with_answer_yes(lead) || lead.last_conversion.content.identificador.indexOf("demonstracao") || lead.last_conversion.content.identificador.indexOf("landing-page"));
+    return (question_with_answer_yes(lead) || (lead.last_conversion.content.identificador.indexOf("demonstracao") != -1) || (lead.last_conversion.content.identificador.indexOf("landing-page") != -1));
+}
+
+function was_not_discarded(lead) {
+    return lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1 && lead.tags.indexOf("DescartadoExact") == -1;
 }
 
 function question_with_answer_yes(lead) {
