@@ -46,10 +46,19 @@ var questions = [
 ];
 
 function is_a_qualified_lead(lead) {
-    if (lead.lead_stage == "Lead" && (lead.fit_score == "a" || lead.fit_score == "b") && question_with_answer_yes(lead)) {
+    if (lead.lead_stage == "Lead" && has_fit_score(lead.fit_score) && raised_hand(lead)) {
         return true;
     }
     return false;
+}
+
+function has_fit_score(fit_score) {
+    return (fit_score == "a" || fit_score == "b");
+}
+
+
+function raised_hand(lead) {
+    return (question_with_answer_yes(lead) || lead.last_conversion.content.identificador.indexOf("demonstracao") || lead.last_conversion.content.identificador.indexOf("landing-page"));
 }
 
 function question_with_answer_yes(lead) {
