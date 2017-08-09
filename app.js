@@ -82,7 +82,6 @@ function was_not_discarded(lead) {
 function question_with_answer_yes(lead) {
     var arrayLength = questions.length;
     for (var i = 0; i < arrayLength; i++) {
-        console.log(lead.last_conversion.content[questions[i]]);
         if (lead.last_conversion.content[questions[i]] == "Sim") {
             return questions[i];
         }
