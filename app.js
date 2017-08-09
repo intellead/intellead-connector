@@ -77,7 +77,7 @@ function raised_hand(lead) {
 }
 
 function was_not_discarded(lead) {
-    return (lead.last_conversion.content.identificador == undefined && lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1) && (lead.tags == undefined || lead.tags == null || (lead.tags != null && lead.tags.indexOf("DescartadoExact") == -1));
+    return (lead.last_conversion.content.identificador == undefined || lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1) && (lead.tags == undefined || lead.tags == null || (lead.tags != null && lead.tags.indexOf("DescartadoExact") == -1));
 }
 
 function question_with_answer_yes(lead) {
