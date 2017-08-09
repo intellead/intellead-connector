@@ -54,9 +54,9 @@ function is_a_qualified_lead(lead) {
     console.log("Fit score: " + lead.fit_score);
     console.log("Question: " + question_with_answer_yes(lead));
     console.log("identificador: " + lead.last_conversion.content.identificador);
-    console.log("demonstracao: " + lead.last_conversion.content.identificador.indexOf("demonstracao"));
-    console.log("landing-page: " + lead.last_conversion.content.identificador.indexOf("landing-page"))
-    console.log("IntegracaoExact: " + lead.last_conversion.content.identificador.indexOf("IntegracaoExact"));
+    console.log("demonstracao: " + lead.last_conversion.content.identificador != undefined ? lead.last_conversion.content.identificador.indexOf("demonstracao") : "undefined");
+    console.log("landing-page: " + lead.last_conversion.content.identificador != undefined ? lead.last_conversion.content.identificador.indexOf("landing-page") : "undefined")
+    console.log("IntegracaoExact: " + lead.last_conversion.content.identificador != undefined ? lead.last_conversion.content.identificador.indexOf("IntegracaoExact") : "undefined");
     console.log("DescartadoExact: " + lead.tags);
     console.log("raised_hand: " + raised_hand(lead));
     console.log("was_not_discarded: " + was_not_discarded(lead));
@@ -73,11 +73,11 @@ function has_fit_score(fit_score) {
 
 
 function raised_hand(lead) {
-    return (question_with_answer_yes(lead) || (lead.last_conversion.content.identificador != null && lead.last_conversion.content.identificador.indexOf("demonstracao") != -1) || (lead.last_conversion.content.identificador != null && lead.last_conversion.content.identificador.indexOf("landing-page") != -1));
+    return (question_with_answer_yes(lead) || (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("demonstracao") != -1) || (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("landing-page") != -1));
 }
 
 function was_not_discarded(lead) {
-    return (lead.last_conversion.content.identificador == null && lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1) && (lead.tags == null || (lead.tags != null && lead.tags.indexOf("DescartadoExact") == -1));
+    return (lead.last_conversion.content.identificador == undefined && lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1) && (lead.tags == undefined || lead.tags == null || (lead.tags != null && lead.tags.indexOf("DescartadoExact") == -1));
 }
 
 function question_with_answer_yes(lead) {
