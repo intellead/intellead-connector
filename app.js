@@ -53,10 +53,10 @@ function is_a_qualified_lead(lead) {
     console.log("has_fit_score: " + has_fit_score(lead.fit_score));
     console.log("Fit score: " + lead.fit_score);
     console.log("Question: " + question_with_answer_yes(lead));
-    console.log("demonstracao: " + lead.last_conversion.content.identificador.indexOf("demonstracao") != -1);
-    console.log("landing-page: " + lead.last_conversion.content.identificador.indexOf("landing-page") != -1)
-    console.log("IntegracaoExact: " + lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1);
-    console.log("DescartadoExact: " + lead.tags.indexOf("DescartadoExact") == -1);
+    console.log("demonstracao: " + lead.last_conversion.content.identificador.indexOf("demonstracao"));
+    console.log("landing-page: " + lead.last_conversion.content.identificador.indexOf("landing-page"))
+    console.log("IntegracaoExact: " + lead.last_conversion.content.identificador.indexOf("IntegracaoExact"));
+    console.log("DescartadoExact: " + lead.tags.indexOf("DescartadoExact"));
     console.log("raised_hand: " + raised_hand(lead));
     console.log("was_not_discarded: " + was_not_discarded(lead));
     console.log("=====================================================");
