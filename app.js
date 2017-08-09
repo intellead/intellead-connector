@@ -56,7 +56,7 @@ function is_a_qualified_lead(lead) {
     console.log("demonstracao: " + lead.last_conversion.content.identificador.indexOf("demonstracao"));
     console.log("landing-page: " + lead.last_conversion.content.identificador.indexOf("landing-page"))
     console.log("IntegracaoExact: " + lead.last_conversion.content.identificador.indexOf("IntegracaoExact"));
-    console.log("DescartadoExact: " + lead.tags.indexOf("DescartadoExact"));
+    //console.log("DescartadoExact: " + lead.tags.indexOf("DescartadoExact"));
     console.log("raised_hand: " + raised_hand(lead));
     console.log("was_not_discarded: " + was_not_discarded(lead));
     console.log("=====================================================");
