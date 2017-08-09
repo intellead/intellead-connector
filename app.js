@@ -56,7 +56,7 @@ function is_a_qualified_lead(lead) {
     console.log("demonstracao: " + lead.last_conversion.content.identificador.indexOf("demonstracao"));
     console.log("landing-page: " + lead.last_conversion.content.identificador.indexOf("landing-page"))
     console.log("IntegracaoExact: " + lead.last_conversion.content.identificador.indexOf("IntegracaoExact"));
-    //console.log("DescartadoExact: " + lead.tags.indexOf("DescartadoExact"));
+    console.log("DescartadoExact: " + lead.tags);
     console.log("raised_hand: " + raised_hand(lead));
     console.log("was_not_discarded: " + was_not_discarded(lead));
     console.log("=====================================================");
@@ -76,7 +76,7 @@ function raised_hand(lead) {
 }
 
 function was_not_discarded(lead) {
-    return lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1 && lead.tags.indexOf("DescartadoExact") == -1;
+    return lead.last_conversion.content.identificador.indexOf("IntegracaoExact") == -1 && (lead.tags == null || (lead.tags != null && lead.tags.indexOf("DescartadoExact") == -1));
 }
 
 function question_with_answer_yes(lead) {
