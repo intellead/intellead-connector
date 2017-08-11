@@ -79,7 +79,6 @@ function question_with_answer_yes(lead) {
 
 // Route that receives a POST request to rd-webhook/
 app.post('/rd-webhook', function (req, res) {
-    console.log("[rd-webhook]ENTROU");
     var body = req.body;
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
@@ -93,10 +92,7 @@ app.post('/rd-webhook', function (req, res) {
                 if (err) {
                     console.log(err);
                     return res.sendStatus(400);
-                } else { //Comment when the service is fully activated
-                    return res.sendStatus(200);
                 }
-                /*
                 var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
                 json_rd = {
                     "auth_token": private_token_rd,
@@ -144,7 +140,6 @@ app.post('/rd-webhook', function (req, res) {
                         });
                     }
                 });
-                */
             });
         } else {
             return res.sendStatus(200);
@@ -157,7 +152,6 @@ router.get('/rd-webhook', function(req, res, next) {
 });
 
 router.get('/number_of_conversion_by_email', function(req, res, next) {
-    console.log('[ROUTER]');
     var dao = new Dao();
     dao.numberOfConversionByEmail(function (err, result) {
         if (err) {
