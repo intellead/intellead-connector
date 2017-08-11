@@ -58,7 +58,10 @@ function has_fit_score(fit_score) {
 
 
 function raised_hand(lead) {
-    return (question_with_answer_yes(lead) || (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("demonstracao") != -1) || (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("landing-page") != -1));
+    return (question_with_answer_yes(lead) ||
+           (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("levantada-mao") != -1) ||
+           (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("demonstracao") != -1) ||
+           (lead.last_conversion.content.identificador != undefined && lead.last_conversion.content.identificador.indexOf("landing-page") != -1));
 }
 
 function was_not_discarded(lead) {
