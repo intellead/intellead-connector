@@ -107,22 +107,24 @@ app.post('/rd-webhook', function (req, res) {
                         console.log(error);
                         return res.sendStatus(400);
                     } else {
-                        json_exact = {
-                            "Empresa": lead.company,
-                            "Contatos": [{
-                                "Email": lead.email,
-                                "Nome": lead.name,
-                                "Cargo": lead.job_title,
-                                "Tel1": lead.personal_phone
-                            }],
-                            "Origem": {
-                                "value": "testeferramenta"
-                            },
-                            "TelEmpresa": lead.personal_phone
-                        };
+
                         //AQUI
                     }
                 });
+
+                var json_exact = {
+                    "Empresa": lead.company,
+                    "Contatos": [{
+                        "Email": lead.email,
+                        "Nome": lead.name,
+                        "Cargo": lead.job_title,
+                        "Tel1": lead.personal_phone
+                    }],
+                    "Origem": {
+                        "value": "testeferramenta"
+                    },
+                    "TelEmpresa": lead.personal_phone
+                };
                 var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
                 console.log(url_exact);
                 console.log(private_token_exact);
