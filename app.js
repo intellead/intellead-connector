@@ -85,7 +85,9 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
+        console.log(lead.email + "Chegou");
         if (is_a_qualified_lead(lead)) {
+            console.log(lead.email + " Qualificou");
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
             dao.saveConversion(leadDTO, function (err, result) {
@@ -118,24 +120,25 @@ app.post('/rd-webhook', function (req, res) {
                             },
                             "TelEmpresa": lead.personal_phone
                         };
-                        var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
-                        console.log(url_exact);
-                        console.log(private_token_exact);
-                        console.log(JSON.stringify(json_exact));
-                        request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
-                            console.log('Entrou na request');
-                            if (error){
-                                console.log(error);
-                                console.log('Entrou no error');
-                                return res.sendStatus(400);
-                            } else {
-                                console.log('Entrou na sucesso');
-                                console.log('Status:', response.statusCode);
-                                console.log('Headers:', JSON.stringify(response.headers));
-                                console.log('Response:', body);
-                                res.sendStatus(200);
-                            }
-                        });
+                        //AQUI
+                    }
+                });
+                var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
+                console.log(url_exact);
+                console.log(private_token_exact);
+                console.log(JSON.stringify(json_exact));
+                request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
+                    console.log('Entrou na request');
+                    if (error){
+                        console.log(error);
+                        console.log('Entrou no error');
+                        return res.sendStatus(400);
+                    } else {
+                        console.log('Entrou na sucesso');
+                        console.log('Status:', response.statusCode);
+                        console.log('Headers:', JSON.stringify(response.headers));
+                        console.log('Response:', body);
+                        res.sendStatus(200);
                     }
                 });
             });
