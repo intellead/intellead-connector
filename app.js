@@ -85,7 +85,9 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
+        console.log(lead.email + " chegou");
         if (is_a_qualified_lead(lead)) {
+            console.log(lead.email + " qualificou");
             var question = question_with_answer_yes(lead);
             var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
             dao.saveConversion(leadDTO, function (err, result) {
