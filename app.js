@@ -98,8 +98,13 @@ app.post('/rd-webhook', function (req, res) {
             return res.sendStatus(200);
         }
 
-        var fit_score_url = 'https://intellead-fitscore.herokuapp.com/fitscore/'+cargo+','+area+','+segmento;
-        request({ url: fit_score_url, method: 'GET'}, function(error, request, body){
+        var json_fitscore = {
+            "cargo": cargo,
+            "area": area,
+            "segmento": segmento
+        };
+        var fit_score_url = 'https://intellead-fitscore.herokuapp.com/fitscore';
+        request({ url: fit_score_url, method: 'POST', json: json_fitscore}, function(error, request, body){
             console.log('entrou no fitscore');
             var fit_score = body;
             if (error) {
