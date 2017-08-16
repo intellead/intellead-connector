@@ -175,7 +175,7 @@ app.post('/rd-webhook', function (req, res) {
 
                     });
                 } else {
-                    console.log('O lead' + lead.email + " não é qualificado.");
+                    console.log('O lead ' + lead.email + " não é qualificado.");
                     return res.sendStatus(200);
                 }
             }
