@@ -88,8 +88,11 @@ app.post('/rd-webhook', function (req, res) {
         console.log(lead.email + " chegou");
 
         var cargo = lead.last_conversion.content.cargo;
+        console.log('cargo:'+cargo);
         var area = lead.last_conversion.content.Área;
+        console.log('area:'+area);
         var segmento = lead.last_conversion.content.Segmento;
+        console.log('segmento:'+segmento);
         if (cargo == undefined || cargo == '' ||area == undefined || area == '' || segmento == undefined || segmento == '') {
             console('the variabels to fit score are empty. cargo: ' + cargo + ' area: ' + area + ' segmento: ' +segmento);
         }
