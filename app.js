@@ -77,7 +77,28 @@ function question_with_answer_yes(lead) {
     }
 }
 
-// Route that receives a POST request to rd-webhook/
+function data_to_fit_score(lead) {
+    var cargo = lead.last_conversion.content.cargo;
+    var area = lead.last_conversion.content.Área;
+    var segmento = lead.last_conversion.content.Segmento;
+    var data_to_fit_score = {
+        "cargo": cargo,
+        "area": area,
+        "segmento": segmento
+    };
+    return data_to_fit_score;
+}
+
+function doesnt_have_data_to_fit_score(data) {
+    if (data == undefined || data == '' ||
+        data.cargo == undefined || data.cargo == '' ||
+        data.area == undefined || data.area == '' ||
+        data.segmento == undefined || data.segmento == '') {
+        console.log('The variables to fit score are empty. Data: ' + data);
+        return true;
+    }
+}
+
 app.post('/rd-webhook', function (req, res) {
     var body = req.body;
     if (!body) return res.sendStatus(400);
@@ -85,35 +106,20 @@ app.post('/rd-webhook', function (req, res) {
     var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
-        console.log(lead.email + " chegou");
-
-        var cargo = lead.last_conversion.content.cargo;
-        console.log('cargo:'+cargo);
-        var area = lead.last_conversion.content.Área;
-        console.log('area:'+area);
-        var segmento = lead.last_conversion.content.Segmento;
-        console.log('segmento:'+segmento);
-        if (cargo == undefined || cargo == '' ||area == undefined || area == '' || segmento == undefined || segmento == '') {
-            console.log('the variables to fit score are empty. cargo: ' + cargo + ' area: ' + area + ' segmento: ' + segmento);
+        console.log('O lead ' + lead.email + " chegou.");
+        var params_to_fit_score = data_to_fit_score(lead);
+        if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
             return res.sendStatus(200);
         }
-
-        var json_fitscore = {
-            "cargo": cargo,
-            "area": area,
-            "segmento": segmento
-        };
-        var fit_score_url = 'https://intellead-fitscore.herokuapp.com/fitscore';
-        request({ url: fit_score_url, method: 'POST', json: json_fitscore}, function(error, request, body){
-            console.log('entrou no fitscore');
-            var fit_score = body;
+        request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, request, body){
             if (error) {
                 console.log(error);
                 return res.sendStatus(400);
             } else {
-                console.log('fit_score'+fit_score);
+                var fit_score = body;
+                console.log('O lead ' + lead.email + ' tem fit score: ' + fit_score);
                 if (is_a_qualified_lead(lead, fit_score)) {
-                    console.log(lead.email + " qualificou");
+                    console.log('O lead' + lead.email + " é qualificado.");
                     var question = question_with_answer_yes(lead);
                     var leadDTO = new LeadConversionData(lead.id, lead.email, fit_score, question, new Date());
                     dao.saveConversion(leadDTO, function (err, result) {
@@ -169,6 +175,7 @@ app.post('/rd-webhook', function (req, res) {
 
                     });
                 } else {
+                    console.log('O lead' + lead.email + " não é qualificado.");
                     return res.sendStatus(200);
                 }
             }

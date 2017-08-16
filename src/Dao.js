@@ -27,7 +27,6 @@ class Dao {
     }
 
     numberOfConversionByEmail(callback){
-        console.log("[numberOfConversionByEmail]ENTROU");
         MongoClient.connect(url, function (err, db) {
             if (err) {
                 console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -48,7 +47,6 @@ class Dao {
                             console.log(err);
                         }
                         db.close();
-                        console.log("[numberOfConversionByEmail]RESULT: " + JSON.stringify(result));
                         callback(err, result);
                     }
                 );
