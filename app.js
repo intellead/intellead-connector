@@ -94,7 +94,8 @@ app.post('/rd-webhook', function (req, res) {
         var segmento = lead.last_conversion.content.Segmento;
         console.log('segmento:'+segmento);
         if (cargo == undefined || cargo == '' ||area == undefined || area == '' || segmento == undefined || segmento == '') {
-            console('the variabels to fit score are empty. cargo: ' + cargo + ' area: ' + area + ' segmento: ' +segmento);
+            console.log('the variables to fit score are empty. cargo: ' + cargo + ' area: ' + area + ' segmento: ' + segmento);
+            return res.sendStatus(200);
         }
 
         var fit_score_url = 'https://intellead-fitscore.herokuapp.com/fitscore/'+cargo+','+area+','+segmento;
