@@ -45,8 +45,8 @@ var questions = [
     "Quero uma demonstração de um software de gestão para minha empresa! - Planilhas e Ebooks"
 ];
 
-function is_a_qualified_lead(lead) {
-    if (lead.lead_stage == "Lead" && has_fit_score(lead.fit_score) && raised_hand(lead) && was_not_discarded(lead)) {
+function is_a_qualified_lead(lead, fit_score) {
+    if (lead.lead_stage == "Lead" && has_fit_score(fit_score) && raised_hand(lead) && was_not_discarded(lead)) {
         return true;
     }
     return false;
@@ -86,65 +86,84 @@ app.post('/rd-webhook', function (req, res) {
     for (var index in leads) {
         var lead = leads[index];
         console.log(lead.email + " chegou");
-        if (is_a_qualified_lead(lead)) {
-            console.log(lead.email + " qualificou");
-            var question = question_with_answer_yes(lead);
-            var leadDTO = new LeadConversionData(lead.id, lead.email, lead.fit_score, question, new Date());
-            dao.saveConversion(leadDTO, function (err, result) {
-                if (err) {
-                    console.log(err);
-                    return res.sendStatus(400);
-                } else { //coment here when activate
-                    return res.sendStatus(200);//coment here when activate
-                }//coment here when activate
-                /*
-                var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
-                var json_rd = {
-                    "auth_token": private_token_rd,
-                    "lead": {
-                        "lifecycle_stage": stage_qualified_lead
-                    }
-                };
-                request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
-                    if (error) {
-                        console.log(error);
-                        return res.sendStatus(400);
-                    } else {
-                        //AQUI PARA ENCADEAR EXACT
-                    }
-                });
-                var json_exact = {
-                    "Empresa": lead.company,
-                    "Contatos": [{
-                        "Email": lead.email,
-                        "Nome": lead.name,
-                        "Cargo": lead.job_title,
-                        "Tel1": lead.personal_phone
-                    }],
-                    "Origem": {
-                        "value": "testeferramenta"
-                    },
-                    "TelEmpresa": lead.personal_phone
-                };
-                var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
-                request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
-                    if (error){
-                        console.log(error);
-                        console.log('Entrou no error');
-                        return res.sendStatus(400);
-                    } else {
-                        console.log('Status:', response.statusCode);
-                        console.log('Headers:', JSON.stringify(response.headers));
-                        console.log('Response:', body);
-                        res.sendStatus(200);
-                    }
-                });
-                */
 
-            });
-        } else {
-            return res.sendStatus(200);
+        var cargo = lead.last_conversion.content.cargo;
+        var area = lead.last_conversion.content.Área;
+        var segmento = lead.last_conversion.content.Segmento;
+        if (cargo == undefined || cargo == '' ||area == undefined || area == '' || segmento == undefined || segmento == '') {
+            console('the variabels to fit score are empty. cargo: ' + cargo + ' area: ' + area + ' segmento: ' +segmento);
         }
+
+        var fit_score_url = 'https://intellead-fitscore.herokuapp.com/fitscore/'+cargo+','+area+','+segmento;
+        request({ url: fit_score_url, method: 'GET'}, function(error, request, body){
+            console.log('entrou no fitscore');
+            var fit_score = body;
+            if (error) {
+                console.log(error);
+                return res.sendStatus(400);
+            } else {
+                console.log('fit_score'+fit_score);
+                if (is_a_qualified_lead(lead, fit_score)) {
+                    console.log(lead.email + " qualificou");
+                    var question = question_with_answer_yes(lead);
+                    var leadDTO = new LeadConversionData(lead.id, lead.email, fit_score, question, new Date());
+                    dao.saveConversion(leadDTO, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                            return res.sendStatus(400);
+                        } else { //coment here when activate
+                            return res.sendStatus(200);//coment here when activate
+                        }//coment here when activate
+                        /*
+                        var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
+                        var json_rd = {
+                            "auth_token": private_token_rd,
+                            "lead": {
+                                "lifecycle_stage": stage_qualified_lead
+                            }
+                        };
+                        request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
+                            if (error) {
+                                console.log(error);
+                                return res.sendStatus(400);
+                            } else {
+                                //AQUI PARA ENCADEAR EXACT
+                            }
+                        });
+                        var json_exact = {
+                            "Empresa": lead.company,
+                            "Contatos": [{
+                                "Email": lead.email,
+                                "Nome": lead.name,
+                                "Cargo": lead.job_title,
+                                "Tel1": lead.personal_phone
+                            }],
+                            "Origem": {
+                                "value": "testeferramenta"
+                            },
+                            "TelEmpresa": lead.personal_phone
+                        };
+                        var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
+                        request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
+                            if (error){
+                                console.log(error);
+                                console.log('Entrou no error');
+                                return res.sendStatus(400);
+                            } else {
+                                console.log('Status:', response.statusCode);
+                                console.log('Headers:', JSON.stringify(response.headers));
+                                console.log('Response:', body);
+                                res.sendStatus(200);
+                            }
+                        });
+                        */
+
+                    });
+                } else {
+                    return res.sendStatus(200);
+                }
+            }
+        });
     }
 });
 
