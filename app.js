@@ -111,7 +111,7 @@ app.post('/rd-webhook', function (req, res) {
         if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
             return res.sendStatus(200);
         }
-        request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, request, body){
+        request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, response, body){
             if (error) {
                 console.log(error);
                 return res.sendStatus(400);
@@ -136,7 +136,7 @@ app.post('/rd-webhook', function (req, res) {
                                 "lifecycle_stage": stage_qualified_lead
                             }
                         };
-                        request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, request, body){
+                        request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, response, body){
                             if (error) {
                                 console.log(error);
                                 return res.sendStatus(400);
