@@ -121,7 +121,7 @@ app.post('/rd-webhook', function (req, res) {
                 if (is_a_qualified_lead(lead, fit_score)) {
                     console.log('O lead' + lead.email + " é qualificado.");
                     var question = question_with_answer_yes(lead);
-                    var leadDTO = new LeadConversionData(lead.id, lead.email, fit_score, question, new Date());
+                    var leadDTO = new LeadConversionData(lead, fit_score, question);
                     dao.saveConversion(leadDTO, function (err, result) {
                         if (err) {
                             console.log(err);
