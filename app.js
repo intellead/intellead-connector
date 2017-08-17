@@ -153,7 +153,7 @@ app.post('/rd-webhook', function (req, res) {
                                 "Tel1": lead.personal_phone
                             }],
                             "Origem": {
-                                "value": "testeferramenta"
+                                "value": "digital"
                             },
                             "TelEmpresa": lead.personal_phone
                         };
