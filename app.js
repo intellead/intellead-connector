@@ -126,10 +126,9 @@ app.post('/rd-webhook', function (req, res) {
                         if (err) {
                             console.log(err);
                             return res.sendStatus(400);
-                        } else { //coment here when activate
-                            return res.sendStatus(200);//coment here when activate
-                        }//coment here when activate
-                        /*
+                        } //else { //coment here when activate
+                        //    return res.sendStatus(200);//coment here when activate
+                        //}//coment here when activate
                         var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
                         var json_rd = {
                             "auth_token": private_token_rd,
@@ -171,7 +170,6 @@ app.post('/rd-webhook', function (req, res) {
                                 res.sendStatus(200);
                             }
                         });
-                        */
 
                     });
                 } else {
