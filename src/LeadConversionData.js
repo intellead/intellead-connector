@@ -8,7 +8,7 @@ class LeadConversionData {
         this._fit_score = fit_score;
         this._question = question;
         this._date = new Date();
-        this._created_at = lead.lead.last_conversion.created_at;
+        this._created_at = lead.last_conversion.created_at;
         this._name = lead.last_conversion.content.nome;
         this._identifier = lead.last_conversion.content.identificador;
         this._source = lead.last_conversion.conversion_origin.source;
