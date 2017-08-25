@@ -209,7 +209,7 @@ app.post('/teste', function (req, res) {
     var leads = body["leads"];
     for (var index in leads) {
         var lead = leads[index];
-        //console.log(lead);
+        console.log('O lead ' + lead.email + " chegou.");
     }
     return res.sendStatus(200);
 });
