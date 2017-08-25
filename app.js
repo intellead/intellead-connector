@@ -205,10 +205,11 @@ router.get('/number_of_conversion_by_email', function(req, res, next) {
 app.post('/teste', function (req, res) {
     var body = req.body;
     if (!body) return res.sendStatus(400);
+    console.log(body);
     var leads = body["leads"];
     for (var index in leads) {
         var lead = leads[index];
-        console.log(lead);
+        //console.log(lead);
     }
 });
 
