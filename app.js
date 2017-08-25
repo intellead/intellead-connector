@@ -107,12 +107,7 @@ app.post('/rd-webhook', function (req, res) {
     for (var index in leads) {
         var lead = leads[index];
         console.log('O lead ' + lead.email + " chegou.");
-        var lead_status = lead.lead_status;
-        if (lead_status != null && lead_status != undefined && lead_status != '') {
-            console.log('O lead ' + lead.email + ' foi classificado pelo intellead como: ' + lead_status);
-            console.log('O sistema intellead não está ativado no connector, o lead ' + lead.email + 'não será processado.');
-            return res.sendStatus(200);
-        }
+        //var lead_status = lead.lead_status;
         var params_to_fit_score = data_to_fit_score(lead);
         if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
             return res.sendStatus(200);
