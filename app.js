@@ -211,6 +211,7 @@ app.post('/teste', function (req, res) {
         var lead = leads[index];
         //console.log(lead);
     }
+    return res.sendStatus(200);
 });
 
 router.get('/teste', function(req, res, next) {
