@@ -125,9 +125,9 @@ app.post('/rd-webhook', function (req, res) {
             } else {
                 var fit_score = body;
                 console.log('O lead ' + lead.email + ' tem fit score: ' + fit_score);
-                var qualified_by_intellead = qualified_by_intellead(lead.lead_status);
-                console.log('O lead ' + lead.email + ' foi classificado pelo intellead como: ' + qualified_by_intellead);
-                if (is_a_qualified_lead(lead, fit_score) || qualified_by_intellead) {
+                var qualified_intellead = qualified_by_intellead(lead.lead_status);
+                console.log('O lead ' + lead.email + ' foi classificado pelo intellead como: ' + qualified_intellead);
+                if (is_a_qualified_lead(lead, fit_score) || qualified_intellead) {
                     console.log('O lead' + lead.email + " é qualificado.");
                     var question = question_with_answer_yes(lead);
                     var leadDTO = new LeadConversionData(lead, fit_score, question);
@@ -151,7 +151,7 @@ app.post('/rd-webhook', function (req, res) {
                                 //AQUI PARA ENCADEAR EXACT
                             }
                         });
-                        var origem_exact = qualified_by_intellead ? "intellead" : "digital";
+                        var origem_exact = qualified_intellead ? "intellead" : "digital";
                         var json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
@@ -202,22 +202,6 @@ router.get('/number_of_conversion_by_email', function(req, res, next) {
             return res.status(200).send(result);
         }
     });
-});
-
-app.post('/teste', function (req, res) {
-    var body = req.body;
-    console.log(body);
-    if (!body) return res.sendStatus(400);
-    var leads = body["leads"];
-    for (var index in leads) {
-        var lead = leads[index];
-        console.log('O lead ' + lead.email + " chegou.");
-    }
-    return res.sendStatus(200);
-});
-
-router.get('/teste', function(req, res, next) {
-    res.sendStatus(200);
 });
 
 // catch 404 and forward to error handler
