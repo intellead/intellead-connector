@@ -100,7 +100,7 @@ function doesnt_have_data_to_fit_score(data) {
 }
 
 function qualified_by_intellead(lead_status) {
-    if (lead_status != undefined && lead_status != null && lead_status != '' && lead_status == 1) {
+    if (lead.lead_stage == "Lead" && lead_status != undefined && lead_status != null && lead_status != '' && lead_status == 1) {
         return true;
     }
     return false;
@@ -127,8 +127,9 @@ app.post('/rd-webhook', function (req, res) {
                 console.log('O lead ' + lead.email + ' tem fit score: ' + fit_score);
                 var qualified_intellead = qualified_by_intellead(lead.lead_status);
                 console.log('O lead ' + lead.email + ' foi classificado pelo intellead como: ' + qualified_intellead);
-                if (is_a_qualified_lead(lead, fit_score) || qualified_intellead) {
-                    console.log('O lead' + lead.email + " é qualificado.");
+                //|| qualified_intellead
+                if (is_a_qualified_lead(lead, fit_score)) {
+                    console.log('O lead ' + lead.email + " é qualificado.");
                     var question = question_with_answer_yes(lead);
                     var leadDTO = new LeadConversionData(lead, fit_score, question);
                     dao.saveConversion(leadDTO, function (err, result) {
