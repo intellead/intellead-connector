@@ -99,6 +99,13 @@ function doesnt_have_data_to_fit_score(data) {
     }
 }
 
+function qualified_by_intellead(lead_status) {
+    if (lead_status != undefined && lead_status != null && lead_status != '' && lead_status == 1) {
+        return true;
+    }
+    return false;
+}
+
 app.post('/rd-webhook', function (req, res) {
     var body = req.body;
     if (!body) return res.sendStatus(400);
@@ -107,7 +114,6 @@ app.post('/rd-webhook', function (req, res) {
     for (var index in leads) {
         var lead = leads[index];
         console.log('O lead ' + lead.email + " chegou.");
-        //var lead_status = lead.lead_status;
         var params_to_fit_score = data_to_fit_score(lead);
         if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
             return res.sendStatus(200);
@@ -119,7 +125,9 @@ app.post('/rd-webhook', function (req, res) {
             } else {
                 var fit_score = body;
                 console.log('O lead ' + lead.email + ' tem fit score: ' + fit_score);
-                if (is_a_qualified_lead(lead, fit_score)) {
+                var qualified_by_intellead = qualified_by_intellead(lead.lead_status);
+                console.log('O lead ' + lead.email + ' foi classificado pelo intellead como: ' + qualified_by_intellead);
+                if (is_a_qualified_lead(lead, fit_score) || qualified_by_intellead) {
                     console.log('O lead' + lead.email + " é qualificado.");
                     var question = question_with_answer_yes(lead);
                     var leadDTO = new LeadConversionData(lead, fit_score, question);
@@ -127,9 +135,7 @@ app.post('/rd-webhook', function (req, res) {
                         if (err) {
                             console.log(err);
                             return res.sendStatus(400);
-                        } //else { //coment here when activate
-                        //    return res.sendStatus(200);//coment here when activate
-                        //}//coment here when activate
+                        }
                         var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
                         var json_rd = {
                             "auth_token": private_token_rd,
@@ -145,6 +151,7 @@ app.post('/rd-webhook', function (req, res) {
                                 //AQUI PARA ENCADEAR EXACT
                             }
                         });
+                        var origem_exact = qualified_by_intellead ? "intellead" : "digital";
                         var json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
@@ -154,7 +161,7 @@ app.post('/rd-webhook', function (req, res) {
                                 "Tel1": lead.personal_phone
                             }],
                             "Origem": {
-                                "value": "digital"
+                                "value": origem_exact
                             },
                             "TelEmpresa": lead.personal_phone
                         };
