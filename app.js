@@ -151,7 +151,8 @@ app.post('/rd-webhook', function (req, res) {
                                 //AQUI PARA ENCADEAR EXACT
                             }
                         });
-                        var origem_exact = qualified_intellead ? "intellead" : "digital";
+                        //var origem_exact = qualified_intellead ? "intellead" : "digital";
+                        var origem_exact = "digital";
                         var json_exact = {
                             "Empresa": lead.company,
                             "Contatos": [{
