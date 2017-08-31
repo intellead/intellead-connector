@@ -184,7 +184,7 @@ app.post('/rd-webhook', function (req, res) {
             console.log('The variables to fit score are empty. Data: ' + params_to_fit_score);
             return res.sendStatus(200);
         }
-        request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, response, body){
+        request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, response, body2){
             if (error) {
                 console.log(error);
                 //send an email to sys admin
