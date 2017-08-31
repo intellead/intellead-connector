@@ -4,7 +4,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var router = express.Router();
 var app = express();
 var Dao = require('./src/Dao');
 var LeadConversionData = require('./src/LeadConversionData');
@@ -14,13 +13,13 @@ var private_token_exact = process.env.PRIVATE_TOKEN_EXACT;
 var stage_lead = 0;
 var stage_qualified_lead = 1;
 var stage_client = 2;
+var origin_digital = "digital";
+var origin_intellead = "intellead";
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -33,8 +32,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/', router);
-
 var questions = [
     "Tem interesse em contratar ferramenta de gestão?",
     "Estou a procura de um software de gestão para minha empresa!",
@@ -45,7 +42,7 @@ var questions = [
     "Quero uma demonstração de um software de gestão para minha empresa! - Planilhas e Ebooks"
 ];
 
-function is_a_qualified_lead(lead, fit_score) {
+function is_a_qualified_lead_by_sla(lead, fit_score) {
     if (lead.lead_stage == "Lead" && has_fit_score(fit_score) && raised_hand(lead) && was_not_discarded(lead)) {
         return true;
     }
@@ -55,7 +52,6 @@ function is_a_qualified_lead(lead, fit_score) {
 function has_fit_score(fit_score) {
     return (fit_score == "a" || fit_score == "b");
 }
-
 
 function raised_hand(lead) {
     return (question_with_answer_yes(lead) ||
@@ -94,7 +90,6 @@ function doesnt_have_data_to_fit_score(data) {
         data.cargo == undefined || data.cargo == '' ||
         data.area == undefined || data.area == '' ||
         data.segmento == undefined || data.segmento == '') {
-        console.log('The variables to fit score are empty. Data: ' + data);
         return true;
     }
 }
@@ -106,95 +101,130 @@ function qualified_by_intellead(lead_status) {
     return false;
 }
 
+function change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(email) {
+    var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+email;
+    var json_rd = {
+        "auth_token": private_token_rd,
+        "lead": {
+            "lifecycle_stage": stage_qualified_lead
+        }
+    };
+    request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, response, body){
+        if (error) {
+            console.log(error);
+            //send an email to sys admin
+        } else {
+            console.log('The lead with the email ' + email + ' had changed their stage in the funnel to qualified.');
+        }
+    });
+}
+
+function send_the_lead_to_exact_sales(lead, origem_exact) {
+    var json_exact = {
+        "Empresa": lead.company,
+        "Contatos": [{
+            "Email": lead.email,
+            "Nome": lead.name,
+            "Cargo": lead.job_title,
+            "Tel1": lead.personal_phone
+        }],
+        "Origem": {
+            "value": origem_exact
+        },
+        "TelEmpresa": lead.personal_phone
+    };
+    var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads?validar_duplicidade=0';
+    request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
+        if (error){
+            console.log(error);
+            //send an email to sys admin
+        } else {
+            console.log('Status:', response.statusCode);
+            console.log('Headers:', JSON.stringify(response.headers));
+            console.log('Response:', body);
+        }
+    });
+}
+
+function save_lead_in_database(lead, fit_score) {
+    var question = question_with_answer_yes(lead);
+    var leadDTO = new LeadConversionData(lead, fit_score, question);
+    var dao = new Dao();
+    dao.saveConversion(leadDTO, function (err, result) {
+        if (err) {
+            console.log(err);
+            //send an email to sys admin
+        } else {
+            console.log('O lead ' + lead.email + " foi salvo no banco de dados.");
+        }
+    });
+}
+
+function send_the_lead_to_intellead(data) {
+    request({ url: 'https://intellead-data.herokuapp.com/rd-webhook', method: 'POST', json: data}, function(error, response, body) {
+        if (error) {
+            console.log(error);
+            //send an email to sys admin
+        } else {
+            console.log('The lead was sent to intellead.');
+        }
+    });
+}
+
+
 app.post('/rd-webhook', function (req, res) {
     var body = req.body;
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
-    var dao = new Dao();
     for (var index in leads) {
         var lead = leads[index];
-        console.log('O lead ' + lead.email + " chegou.");
+        console.log('The lead with email ' + lead.email + " has arrived.");
         var params_to_fit_score = data_to_fit_score(lead);
         if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
+            console.log('The variables to fit score are empty. Data: ' + params_to_fit_score);
             return res.sendStatus(200);
         }
         request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, response, body){
             if (error) {
                 console.log(error);
-                return res.sendStatus(400);
-            } else {
-                var fit_score = body;
-                console.log('O lead ' + lead.email + ' tem fit score: ' + fit_score);
-                var qualified_intellead = qualified_by_intellead(lead.lead_status);
-                console.log('O lead ' + lead.email + ' foi classificado pelo intellead como: ' + qualified_intellead);
-                if (is_a_qualified_lead(lead, fit_score)) {
-                    console.log('O lead ' + lead.email + " é qualificado.");
-                    var question = question_with_answer_yes(lead);
-                    var leadDTO = new LeadConversionData(lead, fit_score, question);
-                    dao.saveConversion(leadDTO, function (err, result) {
-                        if (err) {
-                            console.log(err);
-                            return res.sendStatus(400);
-                        }
-                        var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+lead.email;
-                        var json_rd = {
-                            "auth_token": private_token_rd,
-                            "lead": {
-                                "lifecycle_stage": stage_qualified_lead
-                            }
-                        };
-                        request({ url: rd_url, method: 'PUT', json: json_rd}, function(error, response, body){
-                            if (error) {
-                                console.log(error);
-                                return res.sendStatus(400);
-                            } else {
-                                //AQUI PARA ENCADEAR EXACT
-                            }
-                        });
-                        //var origem_exact = qualified_intellead ? "intellead" : "digital";
-                        var origem_exact = "digital";
-                        var json_exact = {
-                            "Empresa": lead.company,
-                            "Contatos": [{
-                                "Email": lead.email,
-                                "Nome": lead.name,
-                                "Cargo": lead.job_title,
-                                "Tel1": lead.personal_phone
-                            }],
-                            "Origem": {
-                                "value": origem_exact
-                            },
-                            "TelEmpresa": lead.personal_phone
-                        };
-                        var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads?validar_duplicidade=0';
-                        request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
-                            if (error){
-                                console.log(error);
-                                console.log('Entrou no error');
-                                return res.sendStatus(400);
-                            } else {
-                                console.log('Status:', response.statusCode);
-                                console.log('Headers:', JSON.stringify(response.headers));
-                                console.log('Response:', body);
-                                res.sendStatus(200);
-                            }
-                        });
-
-                    });
-                } else {
-                    console.log('O lead ' + lead.email + " não é qualificado.");
-                    return res.sendStatus(200);
-                }
+                //send an email to sys admin
+                return res.sendStatus(200);
             }
+            var fit_score = body;
+            console.log('The lead with email ' + lead.email + ' has fit score: ' + fit_score);
+            if (is_a_qualified_lead_by_sla(lead, fit_score)) {
+                console.log('The lead with email ' + lead.email + " is qualified.");
+                save_lead_in_database(lead, fit_score);
+                change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
+                send_the_lead_to_exact_sales(lead, origin_digital);
+            } else {
+                console.log('The lead with email ' + lead.email + " has not qualified according to SLA.");
+                send_the_lead_to_intellead(body);
+                console.log('The lead with email ' + lead.email + " was sent to intellead.");
+            }
+            return res.sendStatus(200);
         });
     }
 });
 
-router.get('/rd-webhook', function(req, res, next) {
-    res.sendStatus(200);
+app.post('/intellead-webhook', function (req, res) {
+    var body = req.body;
+    if (!body) return res.sendStatus(400);
+    var leads = body["leads"];
+    for (var index in leads) {
+        var lead = leads[index];
+        var qualified_intellead = qualified_by_intellead(lead.lead_status);
+        console.log('The lead with email ' + lead.email + ' was classified by intellead as ' + (qualified_intellead ? 'qualified.' : 'unqualified.'));
+        if (lead.lead_stage == "Lead" && was_not_discarded(lead) && qualified_by_intellead) {
+            save_lead_in_database(lead, null);
+            change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
+            send_the_lead_to_exact_sales(lead, origin_intellead);
+        }
+    }
+    return res.sendStatus(200);
 });
 
-router.get('/number_of_conversion_by_email', function(req, res, next) {
+app.get('/number_of_conversion_by_email', function(req, res, next) {
     var dao = new Dao();
     dao.numberOfConversionByEmail(function (err, result) {
         if (err) {
