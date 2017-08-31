@@ -190,7 +190,7 @@ app.post('/rd-webhook', function (req, res) {
                 //send an email to sys admin
                 return res.sendStatus(200);
             }
-            var fit_score = body;
+            var fit_score = body2;
             console.log('The lead with email ' + lead.email + ' has fit score: ' + fit_score);
             if (is_a_qualified_lead_by_sla(lead, fit_score)) {
                 console.log('The lead with email ' + lead.email + " is qualified.");
