@@ -139,7 +139,7 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             }
         ]
     };
-    var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads';
+    var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads?validar_duplicidade=0';
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
         if (error){
             console.log(error);
