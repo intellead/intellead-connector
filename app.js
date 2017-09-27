@@ -102,7 +102,7 @@ function qualified_by_intellead(lead_status) {
 }
 
 function change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(email) {
-    var rd_url = 'https://www.rdstation.com.br/api/1.2/leads/'+email;
+    var rd_url = process.env.RDSTATION_LEAD_STAGE_URL + '/' + email;
     var json_rd = {
         "auth_token": private_token_rd,
         "lead": {
@@ -139,7 +139,7 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             }
         ]
     };
-    var url_exact = 'https://api.spotter.exactsales.com.br/api/v2/leads?validar_duplicidade=0';
+    var url_exact = process.env.EXACTSALES_INSERT_LEAD_URL;
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
         if (error){
             console.log(error);
@@ -167,7 +167,7 @@ function save_lead_in_database(lead, fit_score) {
 }
 
 function send_the_lead_to_intellead(data) {
-    request({ url: 'https://intellead-data.herokuapp.com/rd-webhook', method: 'POST', json: data}, function(error, response, body) {
+    request({ url: process.env.DATA_WEBHOOK_URL, method: 'POST', json: data}, function(error, response, body) {
         if (error) {
             console.log(error);
             //send an email to sys admin
@@ -190,7 +190,7 @@ app.post('/rd-webhook', function (req, res) {
             console.log('The variables to fit score are empty. Data: ' + params_to_fit_score);
             return res.sendStatus(200);
         }
-        request({ url: 'https://intellead-fitscore.herokuapp.com/fitscore', method: 'POST', json: params_to_fit_score}, function(error, response, body2){
+        request({ url: process.env.FITSCORE_URL, method: 'POST', json: params_to_fit_score}, function(error, response, body2){
             if (error) {
                 console.log(error);
                 //send an email to sys admin
