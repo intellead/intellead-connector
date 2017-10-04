@@ -139,7 +139,7 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             }
         ]
     };
-    var url_exact = process.env.EXACTSALES_INSERT_LEAD_URL;
+    var url_exact = process.env.EXACTSALES_INSERT_LEAD_URL_VALIDA_DUPLICIDADE;
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
         if (error){
             console.log(error);
@@ -214,14 +214,15 @@ app.post('/rd-webhook', function (req, res) {
 });
 
 app.post('/intellead-webhook', function (req, res) {
+    console.log('entrou');
     var body = req.body;
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
     for (var index in leads) {
         var lead = leads[index];
         var qualified_intellead = qualified_by_intellead(lead.lead_status);
-        console.log('The lead with email ' + lead.email + ' was classified by intellead as ' + (qualified_intellead ? 'qualified.' : 'unqualified.'));
-        if (lead.lead_stage == "Lead" && was_not_discarded(lead) && qualified_by_intellead) {
+        if (lead.lead_stage == "Lead" && was_not_discarded(lead) && qualified_intellead && lead.lead_status_proba == '1.0' && lead.fit_score == 'a') {
+            console.log('The lead with email ' + lead.email + " is qualified by intellead.");
             save_lead_in_database(lead, null);
             change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
             send_the_lead_to_exact_sales(lead, origin_intellead);
