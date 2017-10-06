@@ -143,6 +143,8 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
         if (error){
             console.log(error);
+            console.log('JSON enviado para a Exact:');
+            console.log(json_exact);
             //send an email to sys admin
         } else {
             console.log('Status:', response.statusCode);
@@ -214,7 +216,6 @@ app.post('/rd-webhook', function (req, res) {
 });
 
 app.post('/intellead-webhook', function (req, res) {
-    console.log('entrou');
     var body = req.body;
     if (!body) return res.sendStatus(400);
     var leads = body["leads"];
