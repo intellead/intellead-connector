@@ -1,7 +1,7 @@
 'use strict';
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
-var url = process.env.MONGODB_URI;
+var url = process.env.MONGODB_URI || 'mongodb://intellead-data-mongodb:27017/local';
 
 
 class Dao {
