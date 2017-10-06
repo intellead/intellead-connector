@@ -150,6 +150,8 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             console.log('Status:', response.statusCode);
             console.log('Headers:', JSON.stringify(response.headers));
             console.log('Response:', body);
+            console.log('JSON enviado para a Exact:');
+            console.log(json_exact);
         }
     });
 }
