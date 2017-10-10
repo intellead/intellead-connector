@@ -143,15 +143,34 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
         if (error){
             console.log(error);
-            console.log('JSON enviado para a Exact:');
+            console.log('JSON sent to Exact:');
             console.log(json_exact);
             //send an email to sys admin
         } else {
             console.log('Status:', response.statusCode);
             console.log('Headers:', JSON.stringify(response.headers));
             console.log('Response:', body);
-            console.log('JSON enviado para a Exact:');
+            console.log('JSON sent to Exact:');
             console.log(json_exact);
+        }
+    });
+}
+
+function send_the_lead_to_victoria(lead, origem) {
+    var json_victoria = {
+        "leads":[{
+            "idrd": lead.id,
+            "email": lead.email,
+            "qualificacao": origem
+        }]
+    };
+    var url_victoria = process.env.VICTORIA_URL;
+    request({url: url_victoria, method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(json_victoria)}, function (error, response, body) {
+        if (error){
+            console.log(error);
+            //send an email to sys admin
+        } else {
+            console.log('The lead with the email ' + lead.email + ' was sent do victoria.');
         }
     });
 }
@@ -207,6 +226,7 @@ app.post('/rd-webhook', function (req, res) {
                 save_lead_in_database(lead, fit_score);
                 change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
                 send_the_lead_to_exact_sales(lead, origin_digital);
+                send_the_lead_to_victoria(lead, origin_digital);
             } else {
                 console.log('The lead with email ' + lead.email + " has not qualified according to SLA.");
                 send_the_lead_to_intellead(body);
@@ -229,6 +249,7 @@ app.post('/intellead-webhook', function (req, res) {
             save_lead_in_database(lead, null);
             change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
             send_the_lead_to_exact_sales(lead, origin_intellead);
+            send_the_lead_to_victoria(lead, origin_intellead);
         }
     }
     return res.sendStatus(200);
