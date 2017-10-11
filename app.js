@@ -146,7 +146,6 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             console.log('Response:', body);
             console.log('JSON sent to Exact:');
             console.log(json_exact);
-            return null;
             //send an email to sys admin
         } else {
             console.log('Status:', response.statusCode);
@@ -154,7 +153,7 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             console.log('Response:', body);
             console.log('JSON sent to Exact:');
             console.log(json_exact);
-            return body.id;
+            send_the_lead_to_victoria(lead, body.id, origin_digital);
         }
     });
 }
@@ -229,8 +228,7 @@ app.post('/rd-webhook', function (req, res) {
                 console.log('The lead with email ' + lead.email + " is qualified.");
                 save_lead_in_database(lead, fit_score);
                 change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
-                var id_exact = send_the_lead_to_exact_sales(lead, origin_digital);
-                send_the_lead_to_victoria(lead, id_exact, origin_digital);
+                send_the_lead_to_exact_sales(lead, origin_digital);
             } else {
                 console.log('The lead with email ' + lead.email + " has not qualified according to SLA.");
                 send_the_lead_to_intellead(body);
@@ -252,8 +250,7 @@ app.post('/intellead-webhook', function (req, res) {
             console.log('The lead with email ' + lead.email + " is qualified by intellead.");
             save_lead_in_database(lead, null);
             change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
-            var id_exact = send_the_lead_to_exact_sales(lead, origin_intellead);
-            send_the_lead_to_victoria(lead, id_exact, origin_intellead);
+            send_the_lead_to_exact_sales(lead, origin_intellead);
         }
     }
     return res.sendStatus(200);
