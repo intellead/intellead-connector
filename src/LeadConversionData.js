@@ -18,6 +18,7 @@ class LeadConversionData {
         this._job_title = lead.last_conversion.content.cargo;
         this._area = lead.last_conversion.content.Área;
         this._segment = lead.last_conversion.content.Segmento;
+        this._company = lead.company;
     }
 
     set id_rd_station(id_rd_station) {
@@ -138,6 +139,14 @@ class LeadConversionData {
 
     get segment() {
         return this._segment;
+    }
+
+    set company(company) {
+        this._company = company;
+    }
+
+    get company() {
+        return this._company;
     }
 
 }
