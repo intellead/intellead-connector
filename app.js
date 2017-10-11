@@ -141,7 +141,7 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
     };
     var url_exact = process.env.EXACTSALES_INSERT_LEAD_URL_VALIDA_DUPLICIDADE;
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
-        if (error || response.statusCode != 201){
+        if (error){
             console.log(error);
             console.log('Response:', body);
             console.log('JSON sent to Exact:');
