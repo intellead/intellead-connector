@@ -158,6 +158,8 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             console.log('Response:', body);
             console.log('JSON sent to Exact:');
             console.log(json_exact);
+            console.log("body.id: " + body.id);
+            console.log("body.id: " + body['id']);
             send_the_lead_to_victoria(lead, body.id, origin_digital);
         }
     });
