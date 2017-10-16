@@ -17,7 +17,7 @@ var origin_digital = "digital";
 var origin_intellead = "intellead";
 
 var rdStationLeadStageUrl = process.env.RDSTATION_LEAD_STAGE_URL || '';
-var exactSalesInsertLeadUrlValidaDuplicidade = process.env.EXACTSALES_INSERT_LEAD_URL_VALIDA_DUPLICIDADE || '';
+var exactSalesInsertLeadUrl = process.env.EXACTSALES_INSERT_LEAD_URL || '';
 var dataWebhookUrl = process.env.DATA_WEBHOOK_URL || 'http://intellead-data:3000/rd-webhook';
 var fitscoreUrl = process.env.FITSCORE_URL || 'http://intellead-fitscore:5000/fitscore';
 
@@ -144,7 +144,7 @@ function send_the_lead_to_exact_sales(lead, origem_exact) {
             }
         ]
     };
-    var url_exact = exactSalesInsertLeadUrlValidaDuplicidade;
+    var url_exact = exactSalesInsertLeadUrl;
     request({url: url_exact, method: 'POST', headers: {'Content-Type': 'application/json', 'token_exact': private_token_exact}, body: JSON.stringify(json_exact)}, function (error, response, body) {
         if (error){
             console.log(error);
@@ -176,8 +176,12 @@ function send_the_lead_to_victoria(lead, id_exact, origem) {
     request({url: url_victoria, method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(json_victoria)}, function (error, response, body) {
         if (error){
             console.log(error);
+            console.log('JSON sent to Victoria:');
+            console.log(json_victoria);
             //send an email to sys admin
         } else {
+            console.log('JSON sent to Victoria:');
+            console.log(json_victoria);
             console.log('The lead with the email ' + lead.email + ' was sent do victoria.');
         }
     });
