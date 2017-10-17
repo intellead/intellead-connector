@@ -47,8 +47,15 @@ var questions = [
     "Quero uma demonstração de um software de gestão para minha empresa! - Planilhas e Ebooks"
 ];
 
+function has_a_valid_phone(lead) {
+    if (lead.personal_phone) {
+        return true;
+    }
+    return false;
+}
+
 function is_a_qualified_lead_by_sla(lead, fit_score) {
-    if (lead.lead_stage == "Lead" && has_fit_score(fit_score) && raised_hand(lead) && was_not_discarded(lead)) {
+    if (lead.lead_stage == "Lead" && has_fit_score(fit_score) && raised_hand(lead) && was_not_discarded(lead) && has_a_valid_phone(lead)) {
         return true;
     }
     return false;
@@ -257,7 +264,7 @@ app.post('/intellead-webhook', function (req, res) {
     for (var index in leads) {
         var lead = leads[index];
         var qualified_intellead = qualified_by_intellead(lead.lead_status);
-        if (lead.lead_stage == "Lead" && was_not_discarded(lead) && qualified_intellead && lead.lead_status_proba == '1.0' && lead.fit_score == 'a') {
+        if (lead.lead_stage == "Lead" && was_not_discarded(lead) && qualified_intellead && lead.lead_status_proba == '1.0' && lead.fit_score == 'a' && has_a_valid_phone(lead)) {
             console.log('The lead with email ' + lead.email + " is qualified by intellead.");
             save_lead_in_database(lead, null);
             change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
