@@ -38,6 +38,7 @@ var rdStationLeadStageUrl = process.env.RDSTATION_LEAD_STAGE_URL || '';
 var exactSalesInsertLeadUrl = process.env.EXACTSALES_INSERT_LEAD_URL || '';
 var dataWebhookUrl = process.env.DATA_WEBHOOK_URL || 'http://intellead-data:3000/rd-webhook';
 var fitscoreUrl = process.env.FITSCORE_URL || 'http://intellead-fitscore:5000/fitscore';
+var securityUrl = process.env.SECURITY_URL || 'http://intellead-security:8080/auth';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -241,38 +242,44 @@ function send_the_lead_to_intellead(data) {
 
 
 app.post('/rd-webhook', function (req, res) {
-    var body = req.body;
-    if (!body) return res.sendStatus(400);
-    var leads = body["leads"];
-    for (var index in leads) {
-        var lead = leads[index];
-        console.log('The lead with email ' + lead.email + " has arrived.");
-        var params_to_fit_score = data_to_fit_score(lead);
-        if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
-            console.log('The variables to fit score are empty. Data: ' + params_to_fit_score);
-            return res.sendStatus(200);
-        }
-        request({ url: fitscoreUrl, method: 'POST', json: params_to_fit_score}, function(error, response, body2){
-            if (error) {
-                console.log(error);
-                //send an email to sys admin
+    var token = req.header('token');
+    if (!token) return res.sendStatus(401);
+    request({ url: securityUrl + '/' + token}, function(error, response, authBody) {
+        if (response.statusCode != 200) return res.sendStatus(403);
+        var body = req.body;
+        if (!body) return res.sendStatus(400);
+        var leads = body["leads"];
+        if (!leads) return res.sendStatus(412);
+        for (var index in leads) {
+            var lead = leads[index];
+            console.log('The lead with email ' + lead.email + " has arrived.");
+            var params_to_fit_score = data_to_fit_score(lead);
+            if (doesnt_have_data_to_fit_score(params_to_fit_score)) {
+                console.log('The variables to fit score are empty. Data: ' + params_to_fit_score);
                 return res.sendStatus(200);
             }
-            var fit_score = body2;
-            console.log('The lead with email ' + lead.email + ' has fit score: ' + fit_score);
-            if (is_a_qualified_lead_by_sla(lead, fit_score)) {
-                console.log('The lead with email ' + lead.email + " is qualified.");
-                save_lead_in_database(lead, fit_score);
-                change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
-                send_the_lead_to_exact_sales(lead, origin_digital);
-            } else {
-                console.log('The lead with email ' + lead.email + " has not qualified according to SLA.");
-                send_the_lead_to_intellead(body);
-                console.log('The lead with email ' + lead.email + " was sent to intellead.");
-            }
-            return res.sendStatus(200);
-        });
-    }
+            request({ url: fitscoreUrl, method: 'POST', json: params_to_fit_score}, function(error, response, body2){
+                if (error) {
+                    console.log(error);
+                    //send an email to sys admin
+                    return res.sendStatus(200);
+                }
+                var fit_score = body2;
+                console.log('The lead with email ' + lead.email + ' has fit score: ' + fit_score);
+                if (is_a_qualified_lead_by_sla(lead, fit_score)) {
+                    console.log('The lead with email ' + lead.email + " is qualified.");
+                    save_lead_in_database(lead, fit_score);
+                    change_the_lead_at_the_funnel_stage_to_qualified_in_rdstation(lead.email);
+                    send_the_lead_to_exact_sales(lead, origin_digital);
+                } else {
+                    console.log('The lead with email ' + lead.email + " has not qualified according to SLA.");
+                    send_the_lead_to_intellead(body);
+                    console.log('The lead with email ' + lead.email + " was sent to intellead.");
+                }
+                return res.sendStatus(200);
+            });
+        }
+    });
 });
 
 app.post('/intellead-webhook', function (req, res) {
