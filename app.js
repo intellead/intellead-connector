@@ -240,11 +240,12 @@ function send_the_lead_to_intellead(data) {
     });
 }
 
-
 app.post('/rd-webhook', function (req, res) {
-    var token = req.header('token');
-    if (!token) return res.sendStatus(401);
-    request({ url: securityUrl + '/' + token}, function(error, response, authBody) {
+    return res.sendStatus(401)
+});
+
+app.post('/rd-webhook/:token', function (req, res) {
+    request({ url: securityUrl + '/' + req.params.token}, function(error, response, authBody) {
         if (response.statusCode != 200) return res.sendStatus(403);
         var body = req.body;
         if (!body) return res.sendStatus(400);
