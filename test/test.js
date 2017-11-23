@@ -78,14 +78,6 @@ describe('POST /rd-webhook/1', function() {
 
 describe('POST /intellead-webhook', function() {
 
-    before(function () {
-        console.log = function () {};
-    });
-
-    after(function () {
-        delete console.log;
-    });
-
     it('should return status code 412', function(done) {
         request.post('/intellead-webhook').expect(412).end(function(err, res) {
             if (err) return done(err);
@@ -97,25 +89,6 @@ describe('POST /intellead-webhook', function() {
         var data = {
             leads: {
                 email:'john@silva.com'
-            }
-        };
-        request
-            .post('/intellead-webhook')
-            .send({
-                'leads': data
-            })
-            .set('Accept', 'application/json')
-            .expect(200).end(function(err, res) {
-            if (err) return done(err);
-            done();
-        });
-    });
-
-    it('should return status code 200 when lead is qualified', function(done) {
-        var data = {
-            leads: {
-                email:'john@silva.com',
-                lead_status: 1
             }
         };
         request
