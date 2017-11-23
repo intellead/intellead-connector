@@ -76,8 +76,8 @@ app.post('/intellead-webhook', function (req, res) {
             var lead = leads[index];
             if (intellead.is_qualified_by_intellead(lead.lead_status)) {
                 console.log('The lead with email ' + lead.email + ' is qualified by intellead.');
-                rdstation.change_the_lead_at_the_funnel_stage_to_qualified(lead.email);
-                exactspotter.insert_lead(lead.email, lead.name, lead.company, lead.job_title, lead.personal_phone);
+                //rdstation.change_the_lead_at_the_funnel_stage_to_qualified(lead.email);
+                //exactspotter.insert_lead(lead.email, lead.name, lead.company, lead.job_title, lead.personal_phone);
             }
         }
         return res.sendStatus(200);
@@ -96,7 +96,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  
   // router the error page
   res.status(err.status || 500);
   res.render('error');
