@@ -79,10 +79,15 @@ describe('POST /rd-webhook/1', function() {
 describe('POST /intellead-webhook', function() {
 
     it('should return status code 412', function(done) {
-        request.post('/intellead-webhook').expect(412).end(function(err, res) {
-            if (err) return done(err);
-            done();
-        });
+        request_stub.withArgs({url: 'http://intellead-security:8080/auth/1'}).yields(null, {'statusCode': 200}, null);
+        request
+            .post('/intellead-webhook')
+            .set('token', '1')
+            .expect(412)
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
     });
 
     it('should return status code 200', function(done) {
@@ -91,16 +96,31 @@ describe('POST /intellead-webhook', function() {
                 email:'john@silva.com'
             }
         };
+        request_stub.withArgs({url: 'http://intellead-security:8080/auth/1'}).yields(null, {'statusCode': 200}, null);
         request
             .post('/intellead-webhook')
             .send({
                 'leads': data
             })
             .set('Accept', 'application/json')
-            .expect(200).end(function(err, res) {
-            if (err) return done(err);
-            done();
-        });
+            .set('token', '1')
+            .expect(200)
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
+    });
+
+    it('should return status code 403', function(done) {
+        request_stub.withArgs({url: 'http://intellead-security:8080/auth/1'}).yields(null, {'statusCode': 403}, null);
+        request
+            .post('/intellead-webhook')
+            .set('token', '1')
+            .expect(403)
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+            });
     });
 
 });

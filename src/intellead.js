@@ -26,8 +26,14 @@ module.exports = {
         }
         return false;
     },
-    send_the_lead_to_intellead_data: function (data) {
-        request({ url: dataWebhookUrl, method: 'POST', json: data}, function(error, response, body) {
+    send_the_lead_to_intellead_data: function (token, data) {
+        var options = {
+            url: dataWebhookUrl,
+            method: 'POST',
+            json: data,
+            headers: {token: token}
+        };
+        request(options, function(error, response, body) {
             if (error) {
                 console.log(error);
             }
