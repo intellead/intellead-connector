@@ -44,7 +44,8 @@ app.post('/rd-webhook', function (req, res) {
 });
 
 app.post('/rd-webhook/:token', function (req, res) {
-    request({ url: securityUrl + '/' + req.params.token}, function(error, response, body) {
+    var token = req.param('token');
+    request({ url: securityUrl + '/' + token}, function(error, response, body) {
         if (response.statusCode != 200) {
             if (error) {
                 console.log(error);
@@ -57,7 +58,7 @@ app.post('/rd-webhook/:token', function (req, res) {
         for (var index in leads) {
             var lead = leads[index];
             console.log('The lead with email ' + lead.email + ' has arrived.');
-            intellead.send_the_lead_to_intellead_data(body);
+            intellead.send_the_lead_to_intellead_data(token, body);
             console.log('The lead with email ' + lead.email + ' was sent to intellead.');
             return res.sendStatus(200);
         }
@@ -65,18 +66,22 @@ app.post('/rd-webhook/:token', function (req, res) {
 });
 
 app.post('/intellead-webhook', function (req, res) {
-    var body = req.body;
-    var leads = body["leads"];
-    if (!leads) return res.sendStatus(412);
-    for (var index in leads) {
-        var lead = leads[index];
-        if (intellead.is_qualified_by_intellead(lead.lead_status)) {
-            console.log('The lead with email ' + lead.email + ' is qualified by intellead.');
-            rdstation.change_the_lead_at_the_funnel_stage_to_qualified(lead.email);
-            exactspotter.insert_lead(lead.email, lead.name, lead.company, lead.job_title, lead.personal_phone);
+    var token = req.header('token');
+    request({ url: securityUrl + '/' + token}, function(error, response, authBody) {
+        if (response.statusCode != 200) return res.sendStatus(403);
+        var body = req.body;
+        var leads = body["leads"];
+        if (!leads) return res.sendStatus(412);
+        for (var index in leads) {
+            var lead = leads[index];
+            if (intellead.is_qualified_by_intellead(lead.lead_status)) {
+                console.log('The lead with email ' + lead.email + ' is qualified by intellead.');
+                rdstation.change_the_lead_at_the_funnel_stage_to_qualified(lead.email);
+                exactspotter.insert_lead(lead.email, lead.name, lead.company, lead.job_title, lead.personal_phone);
+            }
         }
-    }
-    return res.sendStatus(200);
+        return res.sendStatus(200);
+    });
 });
 
 // catch 404 and forward to error handler
@@ -91,6 +96,10 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // router the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;
