@@ -68,7 +68,12 @@ app.post('/rd-webhook/:token', function (req, res) {
 app.post('/intellead-webhook', function (req, res) {
     var token = req.header('token');
     request({ url: securityUrl + '/' + token}, function(error, response, authBody) {
-        if (response.statusCode != 200) return res.sendStatus(403);
+        if (response.statusCode != 200) {
+            if (error) {
+                console.log(error);
+            }
+            return res.sendStatus(response.statusCode);
+        }
         var body = req.body;
         var leads = body["leads"];
         if (!leads) return res.sendStatus(412);
@@ -80,6 +85,20 @@ app.post('/intellead-webhook', function (req, res) {
                 //exactspotter.insert_lead(lead.email, lead.name, lead.company, lead.job_title, lead.personal_phone);
             }
         }
+        return res.sendStatus(200);
+    });
+});
+
+app.post('/classification/instance/:token', function (req, res) {
+    var token = req.param('token');
+    request({ url: securityUrl + '/' + token}, function(error, response, authBody) {
+        if (response.statusCode != 200) {
+            if (error) {
+                console.log(error);
+            }
+            return res.sendStatus(response.statusCode);
+        }
+        console.log('The lead ' + req.body.email + ' is ready to enrich dataset');
         return res.sendStatus(200);
     });
 });
