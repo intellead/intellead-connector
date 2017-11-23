@@ -99,6 +99,7 @@ app.post('/classification/instance/:token', function (req, res) {
             return res.sendStatus(response.statusCode);
         }
         console.log('The lead ' + req.body.email + ' is ready to enrich dataset');
+        return res.sendStatus(200);
     });
 });
 
