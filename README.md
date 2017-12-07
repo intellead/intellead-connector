@@ -1,5 +1,6 @@
 <h1>Intellead Connector</h1>
 
+[![Build Status](https://travis-ci.org/intellead/intellead-connector.svg?branch=master)](https://travis-ci.org/intellead/intellead-connector)
 
 Intellead Connector is is the gateway to the intellead ecosystem.
 
