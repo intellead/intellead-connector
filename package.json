@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha ; ./node_modules/.bin/istanbul cover ./node_modules/tape/bin/tape ./test/*.js"
+    "test": "nyc mocha"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
