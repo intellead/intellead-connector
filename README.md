@@ -1,16 +1,14 @@
-<h1>Intellead Connector</h1>
+# Intellead Connector
 
+[![Build Status](https://travis-ci.org/intellead/intellead-connector.svg?branch=master)](https://travis-ci.org/intellead/intellead-connector)
+[![codecov](https://codecov.io/gh/intellead/intellead-connector/branch/master/graph/badge.svg)](https://codecov.io/gh/intellead/intellead-connector)
 
 Intellead Connector is is the gateway to the intellead ecosystem.
 
-<h2>Description</h2>
+## Description
 
 This service aims to receive the data from other systems and connect with the intellead services of data storage, enrichment and classification.
 
-<h2>Documentation</h2>
+## Contributing
 
-Project documentation is available at <a href="https://github.com/intellead/intellead-connector/blob/master/DOCUMENTATION.md">DOCUMENTATION.md</a>.
-
-<h2>Contributing</h2>
-
-See the <a href="https://github.com/intellead/intellead-connector/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a> document for details.
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) document for details.
