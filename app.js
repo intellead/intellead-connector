@@ -94,8 +94,16 @@ app.post('/classification/instance/:token', function (req, res) {
             }
             return res.sendStatus(response.statusCode);
         }
-        console.log('The lead ' + req.body.email + ' is ready to enrich dataset');
-        return res.sendStatus(200);
+        var data = req.body;
+        if (data) {
+            intellead.get_lead_from_intellead_data(token, data, function(lead_data) {
+                intellead.normalize_lead_data(token, lead_data, function (lead_data_normalized) {
+                    lead_data_normalized.email = lead_data.lead.email;
+                    intellead.send_lead_data_to_dataset(token, lead_data_normalized);
+                    return res.sendStatus(201);
+                });
+            });
+        }
     });
 });
 
