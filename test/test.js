@@ -25,8 +25,8 @@ var request = supertest(app);
 
 describe('POST /rd-webhook', function() {
 
-    it('should return status code 401', function(done) {
-        request.post('/rd-webhook').expect(401).end(function(err, res) {
+    it('should return status code 404', function(done) {
+        request.post('/rd-webhook').expect(404).end(function(err, res) {
             if (err) return done(err);
             done();
         });

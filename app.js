@@ -39,10 +39,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.post('/rd-webhook', function (req, res) {
-    return res.sendStatus(401)
-});
-
 app.post('/rd-webhook/:token', function (req, res) {
     var token = req.param('token');
     request({ url: securityUrl + '/' + token}, function(error, response, body) {
