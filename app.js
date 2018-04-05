@@ -99,7 +99,6 @@ app.post('/classification/instance/:token', function (req, res) {
             return res.sendStatus(response.statusCode);
         }
         var data = req.body;
-        console.log(data);
         if (data) {
             intellead.get_lead_from_intellead_data(token, data, function(lead_data) {
                 intellead.normalize_lead_data(token, lead_data, function (lead_data_normalized) {
