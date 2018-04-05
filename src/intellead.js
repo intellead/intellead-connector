@@ -17,6 +17,9 @@
 */
 var request = require('request');
 var dataWebhookUrl = process.env.DATA_WEBHOOK_URL || 'http://intellead-data:3000/rd-webhook';
+var dataLeadInfoUrl = process.env.DATA_LEAD_INFO_URL || 'http://intellead-data:3000/lead-info-by-email';
+var normalizationLeadUrl = process.env.NORMALIZATION_LEAD_URL || 'http://intellead-normalization:3008/normalize';
+var classificationDatasetUrl = process.env.CLASSIFICATION_DATASET_URL || 'http://intellead-classification:3007/save_lead_in_dataset';
 
 module.exports = {
 
@@ -42,6 +45,64 @@ module.exports = {
             } else {
                 console.log('The lead was sent to intellead-data but something wrong happened. Status code: ' + response.statusCode);
             }
+        });
+    },
+    send_lead_data_to_dataset: function (token, data) {
+        var options = {
+            url: classificationDatasetUrl,
+            method: 'POST',
+            json: data,
+            headers: {token: token}
+        };
+        request(options, function(error, response, body) {
+            if (error) {
+                console.log(error);
+            }
+            if (response.statusCode == 201) {
+                console.log('The lead was sent to dataset in intellead-classification.');
+            } else {
+                console.log('The lead was sent to dataset in intellead-classification but something wrong happened. Status code: ' + response.statusCode);
+            }
+        });
+    },
+    get_lead_from_intellead_data: function (token, data, callback) {
+        var options = {
+            url: dataLeadInfoUrl,
+            method: 'POST',
+            json: data,
+            headers: {token: token}
+        };
+        request(options, function(error, response, lead_data) {
+            if (error) {
+                console.log(error);
+            }
+            if (response.statusCode == 200) {
+                console.log('The lead was received from intellead-data.');
+                return callback(lead_data);
+            } else {
+                console.log('The lead was not received from intellead-data. Something wrong happened. Status code: ' + response.statusCode);
+            }
+            return callback();
+        });
+    },
+    normalize_lead_data : function (token, data, callback) {
+        var options = {
+            url: normalizationLeadUrl,
+            method: 'POST',
+            json: data,
+            headers: {token: token}
+        };
+        request(options, function (error, response, lead_data_normalized) {
+            if (error) {
+                console.log(error);
+            }
+            if (response.statusCode == 200) {
+                console.log('The lead was normalized by intellead-normalization: ' + JSON.stringify(lead_data_normalized));
+                return callback(lead_data_normalized);
+            } else {
+                console.log('The lead was not normalized by intellead-normalization. Something wrong happened. Status code: ' + response.statusCode);
+            }
+            return callback();
         });
     }
 
