@@ -104,7 +104,7 @@ app.post('/classification/instance/:token', function (req, res) {
                 intellead.normalize_lead_data(token, lead_data, function (lead_data_normalized) {
                     lead_data_normalized.email = lead_data.lead.email;
                     intellead.send_lead_data_to_dataset(token, lead_data_normalized);
-                    return res.sendStatus(200);
+                    return res.sendStatus(201);
                 });
             });
         }
