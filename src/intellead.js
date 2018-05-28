@@ -18,8 +18,8 @@
 var request = require('request');
 var dataWebhookUrl = process.env.DATA_WEBHOOK_URL || 'http://intellead-data:3000/rd-webhook';
 var dataLeadInfoUrl = process.env.DATA_LEAD_INFO_URL || 'http://intellead-data:3000/lead-info-by-email';
-var normalizationLeadUrl = process.env.NORMALIZATION_LEAD_URL || 'http://intellead-normalization:3008/normalize';
-var classificationDatasetUrl = process.env.CLASSIFICATION_DATASET_URL || 'http://intellead-classification:3007/save_lead_in_dataset';
+var normalizationLeadUrl = process.env.NORMALIZATION_LEAD_URL || 'http://intellead-normalization:3000/normalize';
+var classificationDatasetUrl = process.env.CLASSIFICATION_DATASET_URL || 'http://intellead-classification:5000/save_lead_in_dataset';
 
 module.exports = {
 
