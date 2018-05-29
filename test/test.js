@@ -32,7 +32,6 @@ describe('POST /rd-webhook', function() {
         });
     });
 
-
 });
 
 describe('POST /rd-webhook/1', function() {

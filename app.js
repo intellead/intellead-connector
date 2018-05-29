@@ -41,7 +41,7 @@ app.use(function(req, res, next) {
 
 app.post('/rd-webhook/:token', function (req, res) {
     var token = req.param('token');
-    request({ url: securityUrl + '/' + token}, function(error, response, body) {
+    request({ url: securityUrl + '/' + token}, function(error, response, authBody) {
         if (response.statusCode != 200) {
             if (error) {
                 console.log(error);
