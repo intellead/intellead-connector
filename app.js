@@ -60,12 +60,14 @@ app.post('/rd-webhook/:token', function (req, res) {
             console.log('The lead with email ' + lead.email + ' has arrived.');
             intellead.send_the_lead_to_intellead_data(token, body);
             console.log('The lead with email ' + lead.email + ' was sent to intellead.');
+            let area = lead.custom_fields != undefined && lead.custom_fields['Área'] != undefined ? lead.custom_fields['Área'] : 'Não informado';
             mixpanel.track('Converteu novo lead.');
             mixpanel.people.set(lead.email, {
                 $first_name: lead.name,
                 $created: (new Date()).toISOString(),
                 $email: lead.email,
                 job_title: lead.job_title,
+                area: area,
                 lead_stage: lead.lead_stage,
                 company: lead.company,
                 number_conversions: lead.number_conversions
