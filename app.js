@@ -64,6 +64,10 @@ app.post('/rd-webhook/:token', function (req, res) {
             mixpanel.people.set(lead.email, {
                 $first_name: lead.name,
                 $created: (new Date()).toISOString(),
+                $email: lead.email,
+                job_title: lead.job_title,
+                lead_stage: lead.lead_stage,
+                company: lead.company,
                 number_conversions: lead.number_conversions
             });
             return res.sendStatus(200);
