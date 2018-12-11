@@ -12,3 +12,4 @@ This service aims to receive the data from other systems and connect with the in
 ## Contributing
 
 See the [CONTRIBUTING.md](./CONTRIBUTING.md) document for details.
+
