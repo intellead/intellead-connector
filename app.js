@@ -27,6 +27,10 @@ var securityUrl = process.env.SECURITY_URL || 'http://intellead-security:8080/au
 var intellead = require('./src/intellead');
 var rdstation = require('./src/rdstation');
 var exactspotter = require('./src/exactspotter');
+var Mixpanel = require('mixpanel');
+var mixpanel = Mixpanel.init(process.env.PRIVATE_TOKEN_MIXPANEL, {
+    protocol: 'https'
+});
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -56,6 +60,12 @@ app.post('/rd-webhook/:token', function (req, res) {
             console.log('The lead with email ' + lead.email + ' has arrived.');
             intellead.send_the_lead_to_intellead_data(token, body);
             console.log('The lead with email ' + lead.email + ' was sent to intellead.');
+            mixpanel.track('Converteu novo lead.');
+            mixpanel.people.set(lead.email, {
+                $first_name: lead.name,
+                $created: (new Date()).toISOString(),
+                number_conversions: lead.number_conversions
+            });
             return res.sendStatus(200);
         }
     });

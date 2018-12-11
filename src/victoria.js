@@ -19,13 +19,14 @@ var request = require('request');
 
 module.exports = {
 
-    send_the_lead_to_victoria: function(lead, id_exact, origem) {
+    send_the_lead_to_victoria: function(lead, origem) {
         var data = {
             "leads":[{
-                "idrd": lead.id,
-                "idexact": id_exact,
+                "id_rd": lead.id,
+                "id_exact": lead.id_exact,
                 "email": lead.email,
-                "qualificacao": origem
+                "lead_status": lead.lead_status,
+                "lead_status_proba": lead.lead_status_proba
             }]
         };
         var url_victoria = process.env.VICTORIA_URL || '';
