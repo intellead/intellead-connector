@@ -27,6 +27,7 @@ var securityUrl = process.env.SECURITY_URL || 'http://intellead-security:8080/au
 var intellead = require('./src/intellead');
 var rdstation = require('./src/rdstation');
 var exactspotter = require('./src/exactspotter');
+var victoria = require('./src/victoria');
 var Mixpanel = require('mixpanel');
 var mixpanel = Mixpanel.init(process.env.PRIVATE_TOKEN_MIXPANEL, {
     protocol: 'https'
@@ -93,6 +94,7 @@ app.post('/intellead-webhook', function (req, res) {
             var lead = leads[index];
             if (intellead.is_qualified_by_intellead(lead.lead_status)) {
                 console.log('The lead with email ' + lead.email + ' is qualified by intellead.');
+                victoria.send_the_lead_to_victoria(lead);
                 //rdstation.change_the_lead_at_the_funnel_stage_to_qualified(lead.email);
                 //exactspotter.insert_lead(lead.email, lead.name, lead.company, lead.job_title, lead.personal_phone);
             }

@@ -24,7 +24,7 @@ var classificationDatasetUrl = process.env.CLASSIFICATION_DATASET_URL || 'http:/
 module.exports = {
 
     is_qualified_by_intellead: function(lead_status) {
-        if (lead_status == 1) {
+        if (lead_status == 1 || lead_status == '1') {
             return true;
         }
         return false;
