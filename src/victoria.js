@@ -22,7 +22,7 @@ module.exports = {
     send_the_lead_to_victoria: function(lead) {
         var data = {
             "leads":[{
-                "id_rd": lead.id,
+                "id_rd": lead._id,
                 "id_exact": lead.id_exact,
                 "email": lead.email,
                 "lead_status": lead.lead_status,
