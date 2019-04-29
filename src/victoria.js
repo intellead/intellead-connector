@@ -32,6 +32,7 @@ module.exports = {
         var url_victoria = process.env.VICTORIA_URL || '';
         var options = {
             url: url_victoria,
+            rejectUnauthorized: false,
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
